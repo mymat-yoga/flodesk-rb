@@ -1,0 +1,28 @@
+# frozen_string_literal: true
+
+# Flodesk API client.
+#
+# The gem holds no global configuration, so the client lives here as an
+# application constant. That keeps ownership visible and greppable, and leaves
+# per-tenant API keys straightforward: build another client where you need one.
+#
+#   FLODESK.subscribers.upsert(email: "a@b.com")
+#
+# A single client is frozen and safe to share across request threads.
+FLODESK = Flodesk::Client.new(
+  api_key: Rails.application.credentials.flodesk_api_key,
+
+  # Flodesk asks integrations to identify themselves in the User-Agent.
+  app_name: "<%= application_name %> (#{Rails.env})",
+
+  # Retries apply only to operations that are safe to repeat. Creating a
+  # segment, custom field or webhook, and publishing a campaign, are never
+  # retried, because repeating them would duplicate a record or send an email
+  # twice.
+  max_retries: 2
+)
+
+# Rate limits are 100 requests/minute overall and 20/minute for
+# POST /subscribers/batch. Flodesk sends no rate-limit reset header, so the gem
+# cannot guarantee staying within quota; check FLODESK.rate_limit&.remaining if
+# you need to pace a bulk job yourself.

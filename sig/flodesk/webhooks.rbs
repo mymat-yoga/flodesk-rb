@@ -1,0 +1,57 @@
+module Flodesk
+  # Handling of inbound webhook deliveries.
+  #
+  # Flodesk signs nothing, so a verification strategy is mandatory.
+  module Webhooks
+    STRATEGIES: Array[Symbol]
+
+    class VerificationError < Error
+      def initialize: (?String) -> void
+    end
+
+    class InvalidPayloadError < Error
+    end
+
+    module Verification
+      MIN_TOKEN_LENGTH: Integer
+      TOKEN_BYTES: Integer
+
+      def self.generate_token: () -> String
+      def self.secure_compare: (String?, String?) -> bool
+    end
+
+    # A verified inbound webhook event.
+    class Event
+      attr_reader event_name: String?
+      attr_reader event_time: timestamp
+      attr_reader subscriber: Subscriber?
+      attr_reader segment: Segment?
+      attr_reader webhook_id: String?
+      attr_reader raw: payload
+
+      def self.from: (payload, ?subscriber: Subscriber?) -> Event
+      def self.members: () -> Array[Symbol]
+      def to_h: () -> payload
+      def known?: () -> bool
+      # SHA-256 of the composed identity, since events carry no unique id.
+      def dedupe_key: () -> String
+      def inspect: () -> String
+      def to_s: () -> String
+    end
+
+    class Handler
+      def self.generate_token: () -> String
+
+      def initialize: (
+        ?token: String?, ?verify: Symbol?, ?client: Client?
+      ) -> void
+
+      def call: (body: String?, ?token: String?) -> Event
+
+      # Returns a Rack triple: [status, headers, body].
+      def respond: (
+        body: String?, ?token: String?, ?on_error: (^(Exception) -> void)?
+      ) ?{ (Event) -> void } -> [Integer, Hash[String, String], Array[String]]
+    end
+  end
+end

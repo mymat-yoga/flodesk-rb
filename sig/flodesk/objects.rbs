@@ -1,0 +1,135 @@
+# Immutable response value objects.
+#
+# Every object exposes `raw` / `#to_h` returning the payload exactly as the API
+# sent it, so a field Flodesk adds is reachable without a gem release.
+module Flodesk
+  class Subscriber
+    attr_reader id: String?
+    attr_reader status: enum_value
+    attr_reader email: String?
+    attr_reader source: enum_value
+    attr_reader first_name: String?
+    attr_reader last_name: String?
+    attr_reader segments: Array[Segment]
+    attr_reader custom_fields: Hash[String, String?]
+    attr_reader optin_ip: String?
+    attr_reader optin_timestamp: timestamp
+    attr_reader created_at: timestamp
+    attr_reader raw: payload
+
+    def self.from: (payload?) -> Subscriber?
+    def self.members: () -> Array[Symbol]
+    def to_h: () -> payload
+    def active?: () -> bool
+  end
+
+  class Segment
+    attr_reader id: String?
+    attr_reader name: String?
+    attr_reader color: String?
+    attr_reader total_active_subscribers: Integer?
+    attr_reader created_at: timestamp
+    attr_reader raw: payload
+
+    def self.from: (payload?) -> Segment?
+    def self.members: () -> Array[Symbol]
+    def to_h: () -> payload
+  end
+
+  class CustomField
+    attr_reader key: String?
+    attr_reader label: String?
+    attr_reader raw: payload
+
+    def self.from: (payload?) -> CustomField?
+    def self.members: () -> Array[Symbol]
+    def to_h: () -> payload
+  end
+
+  class Workflow
+    attr_reader id: String?
+    attr_reader name: String?
+    attr_reader raw: payload
+
+    def self.from: (payload?) -> Workflow?
+    def self.members: () -> Array[Symbol]
+    def to_h: () -> payload
+  end
+
+  class Webhook
+    attr_reader id: String?
+    attr_reader post_url: String?
+    attr_reader events: Array[String]
+    attr_reader created_at: timestamp
+    attr_reader raw: payload
+
+    def self.from: (payload?) -> Webhook?
+    def self.members: () -> Array[Symbol]
+    def to_h: () -> payload
+  end
+
+  class Campaign
+    attr_reader id: String?
+    attr_reader name: String?
+    attr_reader subject: String?
+    attr_reader status: enum_value
+    attr_reader created_at: timestamp
+    attr_reader updated_at: timestamp
+    attr_reader raw: payload
+
+    def self.from: (payload?) -> Campaign?
+    def self.members: () -> Array[Symbol]
+    def to_h: () -> payload
+  end
+
+  # A single record's failure within a batch operation.
+  class BatchItemError
+    attr_reader index: Integer?
+    attr_reader email: String?
+    attr_reader id: String?
+    attr_reader code: String?
+    attr_reader message: String?
+    attr_reader raw: payload
+
+    def self.from: (payload?) -> BatchItemError?
+    def self.members: () -> Array[Symbol]
+    def to_h: () -> payload
+  end
+
+  # The outcome of a batch operation, which may be a partial success.
+  class BatchResult
+    attr_reader successes: Array[Subscriber]
+    attr_reader failures: Array[BatchItemError]
+    attr_reader raw: payload
+
+    def self.from: (payload?) -> BatchResult
+    def self.members: () -> Array[Symbol]
+    def success?: () -> bool
+    def size: () -> Integer
+    def failed_emails: () -> Array[String]
+    def to_h: () -> payload
+  end
+
+  # One page of a list response.
+  class Page
+    include Enumerable[untyped]
+
+    attr_reader items: Array[untyped]
+    attr_reader page: Integer?
+    attr_reader per_page: Integer?
+    attr_reader total_pages: Integer?
+    attr_reader total_items: Integer?
+    attr_reader raw: payload
+    attr_reader fetcher: ^(Integer) -> Page?
+
+    def self.from: (payload?, klass: untyped, ?fetcher: (^(Integer) -> Page?)?) -> Page
+    def self.members: () -> Array[Symbol]
+    def each: () { (untyped) -> void } -> void
+            | () -> Enumerator[untyped, void]
+    def empty?: () -> bool
+    def more_pages?: () -> bool
+    def to_h: () -> payload
+    def auto_paging_each: () { (untyped) -> void } -> void
+                        | () -> Enumerator[untyped, void]
+  end
+end

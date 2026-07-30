@@ -9,3 +9,13 @@
 
 # rspec failure tracking
 .rspec_status
+
+# Built gems
+*.gem
+
+# This is a library, so the resolved lockfile is not committed: it would pin
+# development versions for everyone without constraining what consumers install.
+/Gemfile.lock
+
+# Machine-local Claude Code permission grants
+/.claude/settings.local.json

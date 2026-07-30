@@ -1,0 +1,1873 @@
+{
+  "components": {
+    "schemas": {
+      "BatchCreateOrUpdateRes": {
+        "properties": {
+          "successes": {
+            "items": {
+              "$ref": "#/components/schemas/SubscriberRes"
+            },
+            "type": "array",
+            "x-order": 0
+          },
+          "failures": {
+            "items": {
+              "$ref": "#/components/schemas/BatchItemError"
+            },
+            "type": "array",
+            "x-order": 1
+          }
+        },
+        "type": "object"
+      },
+      "BatchItemError": {
+        "properties": {
+          "index": {
+            "description": "The zero-based index of the subscriber in the request array.",
+            "format": "int64",
+            "type": "integer",
+            "x-order": 0
+          },
+          "email": {
+            "description": "The email that was submitted for this subscriber.",
+            "type": "string",
+            "x-order": 1
+          },
+          "id": {
+            "description": "The id that was submitted for this subscriber.",
+            "type": "string",
+            "x-order": 2
+          },
+          "code": {
+            "description": "Error code.",
+            "type": "string",
+            "x-order": 3
+          },
+          "message": {
+            "description": "Human-readable error message.",
+            "type": "string",
+            "x-order": 4
+          }
+        },
+        "title": "BatchItemError represents a single failure in a batch operation.",
+        "type": "object"
+      },
+      "CampaignItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "x-order": 0
+          },
+          "status": {
+            "enum": [
+              "draft",
+              "pending",
+              "scheduled",
+              "composing",
+              "sending",
+              "done",
+              "failed"
+            ],
+            "type": "string",
+            "x-order": 1
+          },
+          "name": {
+            "type": "string",
+            "x-order": 2
+          },
+          "subject": {
+            "type": "string",
+            "x-order": 3
+          },
+          "created_at": {
+            "format": "date-time",
+            "type": "string",
+            "x-order": 4
+          },
+          "updated_at": {
+            "format": "date-time",
+            "type": "string",
+            "x-order": 5
+          }
+        },
+        "type": "object"
+      },
+      "CanvaDesignStateRes": {
+        "properties": {
+          "design_id": {
+            "type": "string",
+            "x-order": 0
+          },
+          "campaign_id": {
+            "type": "string",
+            "x-order": 1
+          }
+        },
+        "type": "object"
+      },
+      "CreateOrUpdateSubscriberItem": {
+        "properties": {
+          "id": {
+            "description": "The subscriber's `id`. Either `email` or `id` must be included.",
+            "type": "string",
+            "x-order": 0
+          },
+          "email": {
+            "description": "The subscriber's `email`. Either `email` or `id` must be included.",
+            "type": "string",
+            "x-order": 1
+          },
+          "first_name": {
+            "description": "The subscriber's first name.",
+            "type": "string",
+            "x-order": 2
+          },
+          "last_name": {
+            "description": "The subscriber's last name.",
+            "type": "string",
+            "x-order": 3
+          },
+          "custom_fields": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "An object containing custom field data.\nE.g. ``` \"favorite_color\": \"Lavender\" ```.",
+            "type": "object",
+            "x-order": 4
+          },
+          "segment_ids": {
+            "description": "The segments this subscriber will be added to. Cap at `50`.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "x-order": 5
+          },
+          "double_optin": {
+            "description": "Whether or not to require the subscriber to confirm subscription via email.\n\nThis option is only available to set with new subscriber creation. Default to `false` if not indicated.",
+            "type": "boolean",
+            "x-order": 6
+          },
+          "optin_ip": {
+            "description": "IP address from which the subscriber confirmed their opt-in.",
+            "type": "string",
+            "x-order": 7
+          },
+          "optin_timestamp": {
+            "description": "The date and time the subscribers confirmed their opt-in in ISO 8601 format.\nE.g. `2023-01-02T15:04:05.999Z`.",
+            "type": "string",
+            "x-order": 8
+          }
+        },
+        "title": "CreateOrUpdateSubscriberItem represents a single subscriber payload.",
+        "type": "object"
+      },
+      "CustomFieldRes": {
+        "properties": {
+          "key": {
+            "description": "The unique identifier of the custom field.",
+            "type": "string",
+            "x-order": 0
+          },
+          "label": {
+            "description": "A friendly display label of the custom field.",
+            "type": "string",
+            "x-order": 1
+          }
+        },
+        "type": "object"
+      },
+      "ListAllCustomFieldsRes": {
+        "items": {
+          "$ref": "#/components/schemas/CustomFieldRes"
+        },
+        "type": "array"
+      },
+      "ListCampaignsRes": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/CampaignItem"
+            },
+            "type": "array",
+            "x-order": 0
+          }
+        },
+        "type": "object"
+      },
+      "ListColorsRes": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "ListCustomFieldsRes": {
+        "properties": {
+          "meta": {
+            "$ref": "#/components/schemas/PaginationRes",
+            "x-order": 0
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/CustomFieldRes"
+            },
+            "type": "array",
+            "x-order": 1
+          }
+        },
+        "type": "object"
+      },
+      "ListSegmentsRes": {
+        "properties": {
+          "meta": {
+            "$ref": "#/components/schemas/PaginationRes",
+            "x-order": 0
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/SegmentRes"
+            },
+            "type": "array",
+            "x-order": 1
+          }
+        },
+        "type": "object"
+      },
+      "ListSubscribersRes": {
+        "properties": {
+          "meta": {
+            "$ref": "#/components/schemas/PaginationRes",
+            "x-order": 0
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/SubscriberRes"
+            },
+            "type": "array",
+            "x-order": 1
+          }
+        },
+        "type": "object"
+      },
+      "ListWebhooksRes": {
+        "properties": {
+          "meta": {
+            "$ref": "#/components/schemas/PaginationRes",
+            "x-order": 0
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/WebhookRes"
+            },
+            "type": "array",
+            "x-order": 1
+          }
+        },
+        "type": "object"
+      },
+      "ListWorkflowsRes": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/WorkflowRes"
+            },
+            "type": "array",
+            "x-order": 0
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PaginationRes",
+            "x-order": 1
+          }
+        },
+        "type": "object"
+      },
+      "PaginationRes": {
+        "properties": {
+          "page": {
+            "format": "int64",
+            "type": "integer",
+            "x-order": 0
+          },
+          "total_pages": {
+            "format": "int64",
+            "type": "integer",
+            "x-order": 1
+          },
+          "per_page": {
+            "format": "int64",
+            "type": "integer",
+            "x-order": 2
+          },
+          "total_items": {
+            "format": "int64",
+            "type": "integer",
+            "x-order": 3
+          }
+        },
+        "type": "object"
+      },
+      "PublishCanvaRes": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "x-order": 0
+          },
+          "url": {
+            "type": "string",
+            "x-order": 1
+          }
+        },
+        "type": "object"
+      },
+      "SegmentMini": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "x-order": 0
+          },
+          "name": {
+            "type": "string",
+            "x-order": 1
+          }
+        },
+        "type": "object"
+      },
+      "SegmentRes": {
+        "properties": {
+          "id": {
+            "description": "A read-only generated unique id used to identify each segment record.",
+            "type": "string",
+            "x-order": 0
+          },
+          "name": {
+            "description": "Name of the segment.",
+            "type": "string",
+            "x-order": 1
+          },
+          "total_active_subscribers": {
+            "description": "The number of active subscribers within the segment.",
+            "format": "int64",
+            "type": "integer",
+            "x-order": 2
+          },
+          "created_at": {
+            "description": "The date and time the segment was created in ISO 8601 format.",
+            "format": "date-time",
+            "type": "string",
+            "x-order": 3
+          },
+          "color": {
+            "description": "The color of the segment using a hex code. `Use GET List all segment colors`. to view available colors.",
+            "type": "string",
+            "x-order": 4
+          }
+        },
+        "type": "object"
+      },
+      "SubscriberAddedToSegmentEvent": {
+        "properties": {
+          "event_name": {
+            "description": "The webhook notification's event name. E.g. `subscriber.created`.",
+            "type": "string",
+            "x-order": 0
+          },
+          "event_time": {
+            "description": "The timestamp indicates when the event occurred.",
+            "format": "date-time",
+            "type": "string",
+            "x-order": 1
+          },
+          "subscriber": {
+            "$ref": "#/components/schemas/SubscriberRes",
+            "x-order": 1
+          },
+          "segment": {
+            "$ref": "#/components/schemas/SegmentMini",
+            "x-order": 2
+          },
+          "webhook_id": {
+            "description": "The webhook's identifier.",
+            "type": "string",
+            "x-order": 2
+          }
+        },
+        "type": "object"
+      },
+      "SubscriberCreatedEvent": {
+        "properties": {
+          "event_name": {
+            "description": "The webhook notification's event name. E.g. `subscriber.created`.",
+            "type": "string",
+            "x-order": 0
+          },
+          "event_time": {
+            "description": "The timestamp indicates when the event occurred.",
+            "format": "date-time",
+            "type": "string",
+            "x-order": 1
+          },
+          "subscriber": {
+            "$ref": "#/components/schemas/SubscriberRes",
+            "x-order": 1
+          },
+          "webhook_id": {
+            "description": "The webhook's identifier.",
+            "type": "string",
+            "x-order": 2
+          }
+        },
+        "type": "object"
+      },
+      "SubscriberRes": {
+        "properties": {
+          "id": {
+            "description": "A read-only generated unique id used to identify each subscriber record.",
+            "type": "string",
+            "x-order": 0
+          },
+          "status": {
+            "description": "The subscriber's status.\n\n`active`: The subscriber is currently active to receive marketing emails.\n\n\n`unsubscribed`: The subscriber has opted out of marketing emails.\n\n\n`unconfirmed`: The subscriber is pending for double opt-in confirmation.\n\n\n`bounced`: The subscriber's address is undeliverable due to a hard bounce.\n\n\n`complained`: The subscriber marked an email as spam.\n\n\n`cleaned`: The subscriber was cleaned, learn more [here](https://help.flodesk.com/en/articles/4747969#how_can_i_find_out_which_email_addresses_have_been_cleaned).\n\n",
+            "enum": [
+              "active",
+              "unsubscribed",
+              "unconfirmed",
+              "bounced",
+              "complained",
+              "cleaned"
+            ],
+            "type": "string",
+            "x-order": 1
+          },
+          "email": {
+            "description": "The subscriber's email address.",
+            "type": "string",
+            "x-order": 2
+          },
+          "source": {
+            "description": "The source from which the subscriber was added to your list.\n\n`manual`: Added manually.\n\n\n`csv`: Via CSV upload.\n\n\n`form_optin`: Opted-in via a form.\n\n\n`integration`: Added through an integration. E.g. Shopify.\n\n\n`checkout`: Opted-in via a Flodesk checkout.\n\n",
+            "enum": [
+              "manual",
+              "csv",
+              "form_optin",
+              "integration",
+              "checkout"
+            ],
+            "type": "string",
+            "x-order": 3
+          },
+          "first_name": {
+            "description": "The subscriber's first name.",
+            "type": "string",
+            "x-order": 4
+          },
+          "last_name": {
+            "description": "The subscriber's last name.",
+            "type": "string",
+            "x-order": 5
+          },
+          "segments": {
+            "description": "Segments that the subscriber was added to. Cap at `50`.",
+            "items": {
+              "$ref": "#/components/schemas/SegmentMini"
+            },
+            "type": "array",
+            "x-order": 6
+          },
+          "custom_fields": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "An object containing custom field data.\nE.g. ``` \"favorite_color\": \"Lavender\" ```.",
+            "type": "object",
+            "x-order": 7
+          },
+          "optin_ip": {
+            "description": "IP address from which the subscriber confirmed their opt-in.",
+            "type": "string",
+            "x-order": 8
+          },
+          "optin_timestamp": {
+            "description": "The date and time the subscribers confirmed their opt-in in ISO 8601 format.\nE.g. `2023-01-02T15:04:05.999Z`.",
+            "format": "date-time",
+            "type": "string",
+            "x-order": 9
+          },
+          "created_at": {
+            "description": "The date and time the subscriber was added to your list in ISO 8601 format.",
+            "format": "date-time",
+            "type": "string",
+            "x-order": 10
+          }
+        },
+        "type": "object"
+      },
+      "SubscriberUnsubscribedEvent": {
+        "properties": {
+          "event_name": {
+            "description": "The webhook notification's event name. E.g. `subscriber.created`.",
+            "type": "string",
+            "x-order": 0
+          },
+          "event_time": {
+            "description": "The timestamp indicates when the event occurred.",
+            "format": "date-time",
+            "type": "string",
+            "x-order": 1
+          },
+          "subscriber": {
+            "$ref": "#/components/schemas/SubscriberRes",
+            "x-order": 1
+          },
+          "webhook_id": {
+            "description": "The webhook's identifier.",
+            "type": "string",
+            "x-order": 2
+          }
+        },
+        "type": "object"
+      },
+      "WebhookRes": {
+        "properties": {
+          "id": {
+            "description": "A read-only generated unique id used to identify each webhook record.",
+            "type": "string",
+            "x-order": 0
+          },
+          "post_url": {
+            "description": "The url that the webhook will post to.",
+            "type": "string",
+            "x-order": 1
+          },
+          "events": {
+            "description": "An array specifying which events are enabled for webhook notifications.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "x-order": 2
+          },
+          "created_at": {
+            "description": "The date and time the webhook was created in ISO 8601 format.",
+            "format": "date-time",
+            "type": "string",
+            "x-order": 3
+          }
+        },
+        "type": "object"
+      },
+      "WorkflowRes": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "x-order": 0
+          },
+          "name": {
+            "type": "string",
+            "x-order": 1
+          }
+        },
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "api_key": {
+        "description": "Enter the API key as the username and set the password to an empty\nstring. You can create and manage your API keys from the [API Key](https://app.flodesk.com/account/integration/api)\npage.\n```bash\ncurl \"api_endpoint_here\" \\\n-H \"User-Agent: Your App Name (www.yourapp.com)\" \\\n-H \"Authorization: Basic $(echo YOUR_API_KEY: | base64)\"\n```\n",
+        "scheme": "basic",
+        "type": "http"
+      },
+      "oauth2": {
+        "description": "OAuth2 authentication provides developers with a secure way to access Flodesk API data on behalf of other Flodesk users.\nOAuth2 authentication is used for setting up [partner integrations](#section/Authentication) between third-party applications and Flodesk.\n```bash\ncurl \"api_endpoint_here\" \\\n-H \"User-Agent: Your App Name (www.yourapp.com)\" \\\n-H \"Authorization: Bearer YOUR_ACCESS_TOKEN\"\n```\n",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://api.flodesk.com/oauth2/authorize",
+            "scopes": {
+              "all": "full access to all API resources"
+            },
+            "tokenUrl": "https://api.flodesk.com/oauth2/token"
+          }
+        },
+        "type": "oauth2"
+      }
+    }
+  },
+  "info": {
+    "contact": {
+      "email": "support@flodesk.com",
+      "name": "API Support",
+      "url": "https://flodesk.com"
+    },
+    "description": "# Introduction\n\nFlodesk API provides programmatic access to Flodesk data and functionality, allowing developers to integrate and build custom features with your own system.\n\nThe REST API communicates exclusively in JSON over SSL (HTTPS). All endpoint URLs begin with https://api.flodesk.com/v1.\n\nParameters must be serialized in JSON and passed in the request body (not in the query string or form parameters).\nYou should use the media type designation of `application/json`.\n\n# Authentication\n\nFlodesk API supports two types of integrations that use different forms of authentication:\n\n- **Private integrations**: Where you (a Flodesk member) or a developer on your behalf, integrate with the API yourself to access and update data for your own Flodesk account. For this type of integration, you’ll authenticate with your personal API key. Learn more about creating and managing API keys [here](https://help.flodesk.com/en/articles/4477889).\n\n- **Partner integrations**: You represent an app that would like to build a direct integration which allows customers within your application to authorize direct access to their Flodesk accounts. In this case, you’re acting as an integration partner and must use [OAuth2](https://oauth.net/2/) based authentication with a Client ID and Secret. To apply to build a partner integration, please submit a request using [this form](https://forms.clickup.com/3710264/f/3h79r-13280/A8MEU4E8HSCTYXSVLO).\n\n<SecurityDefinitions />\n\n## Oauth2 quick guide\n\nHere's a quick overview of how to get started with OAuth2 based authentication.\n\n1. After successfully registering your app with Flodesk as outlined above, you can start the Oauth2 flow by redirecting your user to the following url:\n\n```bash\nhttps://api.flodesk.com/oauth2/authorize?client_id=<your_client_id>&redirect_uri=<your_redirect_uri>\n&response_type=code&state=<a_random_string>\n```\n\n2. Your user will go through two security steps:\n  - Login screen: to authenticate their Flodesk account.\n  - Consent screen: to grant permission to your app.\n\n3. The user will then be redirected back to your app with a verification code that will expire in 30 minutes.\n\n4. Your app will then need to make a request to exchange that verification code for an access_token and a refresh_token:\n\n```bash\ncurl -X POST \"https://api.flodesk.com/oauth2/token\" \\\n  -H \"User-Agent: Your App Name (www.yourapp.com)\" \\\n  -H \"Authorization: Basic $(echo <your_client_id>:<your_client_secret> | base64)\" \\\n  -H \"Content-Type: application/x-www-form-urlencoded\" \\\n  -d \"code=<verification_code>&redirect_uri=<redirect_uri>&grant_type=authorization_code\"\n```\n\n5. We will authenticate your app and issue the tokens as shown in the example below.\n\n```js\n{\n  \"access_token\": \"eyJraWQiOiJuUWdsaD...\",\n  \"token_type\": \"Bearer\",\n  \"expires_in\": 86400,\n  \"scopes\": \"all\",\n  \"refresh_token\": \"fd_rt_aef123...\"\n}\n```\n\nYou can now use that access_token in the header of your API requests as follows:\n\n```bash\nAuthorization: Bearer <access_token>\n```\n\n## UserInfo endpoint\n\nThis endpoint can be used to retrieve basic information about the user.\n\n```yaml\nGET https://api.flodesk.com/oauth2/userinfo\nHeader: \"Authorization: Bearer <access_token>\"\n```\n\nExample call with curl:\n\n```bash\ncurl https://api.flodesk.com/oauth2/userinfo \\\n  -H \"Authorization: Bearer <access_token>\"\n```\n\nResponse sample:\n\n```js\n{\n  \"id\":\"a9c3f01e-6cc4-47c5-8710-e6d3c319888e\",\n  \"email\":\"foo@baz.com\",\n  \"full_name\":\"Foo Baz\",\n  \"profile_url\":\"https://example.com/logo.png\",\n  \"created_at\":\"2020-12-24T10:11:42.222Z\"\n}\n```\n\n## Notes on refresh_token\n\nThe refresh_token is used to obtain a new access_token when the current one expires without the user's involvement. See the below example of how to perform token refresh:\n\n```bash\ncurl -X POST \"https://api.flodesk.com/oauth2/token\" \\\n  -H \"User-Agent: Your App Name (www.yourapp.com)\" \\\n  -H \"Authorization: Basic $(echo <your_client_id>:<your_client_secret> | base64)\" \\\n  -H \"Content-Type: application/x-www-form-urlencoded\" \\\n  -d \"refresh_token=<your_refresh_token>&grant_type=refresh_token\"\n```\n\n### Rotation\n\nThe refresh_token is a long-lived token and `single-use` only. Every time a client performs a token refresh, a new refresh_token is issued along with a new access_token, and the previous refresh_token is invalidated.\n\nMake sure you store the new refresh_token for the next refresh.\n\n# Rate Limiting\n\nAll API requests are subject to rate limiting. If you exceed your rate limit, the API will return a 429 error.\n\n| Endpoint | Limit |\n| --- | --- |\n| All endpoints (default) | 100 requests per minute |\n| `POST /v1/subscribers/batch` | 20 requests per minute |\n\nThe batch subscriber endpoint has a separate, lower rate limit because each request can process up to 50 subscribers. This means you can effectively upsert up to 1,000 subscribers per minute using the batch endpoint.\n\nAll API responses include headers with your current rate limit status:\n\n```yaml\nHTTP/1.1 200 OK\nStatus: 200 OK\nX-Fd-RateLimit-Limit: 100\nX-Fd-RateLimit-Remaining: 68\n```\n",
+    "title": "Flodesk API",
+    "version": "1.0.0",
+    "x-logo": {
+      "altText": "Flodesk logo",
+      "url": "/logo.gif"
+    }
+  },
+  "openapi": "3.0.3",
+  "paths": {
+    "/campaigns": {
+      "get": {
+        "operationId": "listCampaigns",
+        "parameters": [
+          {
+            "description": "The page number. Defaults to 1.",
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "The number of records to be returned on each page. Defaults to 20. Maximum 100.",
+            "in": "query",
+            "name": "per_page",
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "Search",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "OrderBy",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "Sort",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "Status",
+            "schema": {
+              "enum": [
+                "draft",
+                "pending",
+                "scheduled",
+                "composing",
+                "sending",
+                "done",
+                "failed"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "SharedAsTemplate",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListCampaignsRes"
+                }
+              }
+            },
+            "description": "ListCampaignsRes"
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "summary": "List campaigns.",
+        "tags": [
+          "campaign"
+        ]
+      }
+    },
+    "/campaigns/canva": {
+      "post": {
+        "operationId": "publishCanvaEmail",
+        "requestBody": {
+          "content": {
+            "*/*": {
+              "schema": {
+                "properties": {
+                  "bundle_url": {
+                    "type": "string",
+                    "x-order": 0
+                  },
+                  "title": {
+                    "type": "string",
+                    "x-order": 1
+                  },
+                  "design_token": {
+                    "type": "string",
+                    "x-order": 2
+                  },
+                  "page_id": {
+                    "type": "string",
+                    "x-order": 3
+                  },
+                  "campaign_id": {
+                    "type": "string",
+                    "x-order": 4
+                  }
+                },
+                "type": "object"
+              }
+            }
+          },
+          "x-originalParamName": "Body"
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublishCanvaRes"
+                }
+              }
+            },
+            "description": "PublishCanvaRes"
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "summary": "Publish a Canva email design as a draft campaign.",
+        "tags": [
+          "campaign"
+        ]
+      }
+    },
+    "/campaigns/canva/design-state": {
+      "get": {
+        "operationId": "getCanvaDesignState",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CanvaDesignStateRes"
+                }
+              }
+            },
+            "description": "CanvaDesignStateRes"
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "summary": "Get the latest Canva design state for auto-selecting campaigns.",
+        "tags": [
+          "campaign"
+        ]
+      }
+    },
+    "/custom-fields": {
+      "get": {
+        "operationId": "listCustomFields",
+        "parameters": [
+          {
+            "description": "The page number. Defaults to 1.",
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "The number of records to be returned on each page. Defaults to 20. Maximum 100.",
+            "in": "query",
+            "name": "per_page",
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListCustomFieldsRes"
+                }
+              }
+            },
+            "description": "ListCustomFieldsRes"
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "summary": "List all custom fields (pagination).",
+        "tags": [
+          "custom-field"
+        ]
+      },
+      "post": {
+        "operationId": "createCustomField",
+        "requestBody": {
+          "content": {
+            "*/*": {
+              "schema": {
+                "properties": {
+                  "label": {
+                    "description": "A friendly display label of the custom field.",
+                    "type": "string",
+                    "x-order": 0
+                  }
+                },
+                "required": [
+                  "label"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "x-originalParamName": "Body"
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomFieldRes"
+                }
+              }
+            },
+            "description": "CustomFieldRes"
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "summary": "Create a custom field.",
+        "tags": [
+          "custom-field"
+        ]
+      }
+    },
+    "/custom-fields/all": {
+      "get": {
+        "operationId": "listAllCustomFields",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListAllCustomFieldsRes"
+                }
+              }
+            },
+            "description": "ListAllCustomFieldsRes"
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "summary": "List all custom fields.",
+        "tags": [
+          "custom-field"
+        ]
+      }
+    },
+    "/segments": {
+      "get": {
+        "operationId": "listSegments",
+        "parameters": [
+          {
+            "description": "The page number. Defaults to 1.",
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "The number of records to be returned on each page. Defaults to 20. Maximum 100.",
+            "in": "query",
+            "name": "per_page",
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListSegmentsRes"
+                }
+              }
+            },
+            "description": "ListSegmentsRes"
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "summary": "List all segments.",
+        "tags": [
+          "segment"
+        ]
+      },
+      "post": {
+        "operationId": "createSegment",
+        "requestBody": {
+          "content": {
+            "*/*": {
+              "schema": {
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "x-order": 0
+                  },
+                  "color": {
+                    "description": "The color of the segment using a hex code. `Use GET List all segment colors`. to view available colors.",
+                    "type": "string",
+                    "x-order": 1
+                  }
+                },
+                "type": "object"
+              }
+            }
+          },
+          "x-originalParamName": "Body"
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SegmentRes"
+                }
+              }
+            },
+            "description": "SegmentRes"
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "summary": "Create a segment.",
+        "tags": [
+          "segment"
+        ]
+      }
+    },
+    "/segments/colors": {
+      "get": {
+        "operationId": "listColors",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListColorsRes"
+                }
+              }
+            },
+            "description": "ListColorsRes"
+          },
+          "401": {
+            "description": ""
+          }
+        },
+        "summary": "List all segment colors.",
+        "tags": [
+          "segment"
+        ]
+      }
+    },
+    "/segments/{id}": {
+      "get": {
+        "operationId": "retrieveSegment",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SegmentRes"
+                }
+              }
+            },
+            "description": "SegmentRes"
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "summary": "Retrieve a segment.",
+        "tags": [
+          "segment"
+        ]
+      }
+    },
+    "/subscribers": {
+      "get": {
+        "operationId": "listSubscribers",
+        "parameters": [
+          {
+            "description": "The page number. Defaults to 1.",
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "The number of records to be returned on each page. Defaults to 20. Maximum 100.",
+            "in": "query",
+            "name": "per_page",
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Optional. The subscriber's status.\n\n`active`: The subscriber is currently active to receive marketing emails.\n\n\n`unsubscribed`: The subscriber has opted out of marketing emails.\n\n\n`unconfirmed`: The subscriber is pending for double opt-in confirmation.\n\n\n`bounced`: The subscriber's address is undeliverable due to a hard bounce.\n\n\n`complained`: The subscriber marked an email as spam.\n\n\n`cleaned`: The subscriber was cleaned, learn more [here](https://help.flodesk.com/en/articles/4747969#how_can_i_find_out_which_email_addresses_have_been_cleaned).\n\n",
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "enum": [
+                "active",
+                "unsubscribed",
+                "unconfirmed",
+                "bounced",
+                "complained",
+                "cleaned"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional. The segment's id. When included, returns only subscribers who were added to the given segment.",
+            "in": "query",
+            "name": "segment_id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListSubscribersRes"
+                }
+              }
+            },
+            "description": "ListSubscribersRes"
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "summary": "List all subscribers.",
+        "tags": [
+          "subscriber"
+        ]
+      },
+      "post": {
+        "operationId": "createOrUpdateSubscriber",
+        "requestBody": {
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrUpdateSubscriberItem"
+              }
+            }
+          },
+          "x-originalParamName": "Body"
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriberRes"
+                }
+              }
+            },
+            "description": "SubscriberRes"
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "summary": "Create or update a subscriber.",
+        "tags": [
+          "subscriber"
+        ]
+      }
+    },
+    "/subscribers/batch": {
+      "post": {
+        "description": "Create or update up to 50 subscribers in a single request.",
+        "operationId": "batchCreateOrUpdateSubscribers",
+        "requestBody": {
+          "content": {
+            "*/*": {
+              "schema": {
+                "properties": {
+                  "subscribers": {
+                    "description": "List of subscribers to create or update. Maximum 50 items.",
+                    "items": {
+                      "$ref": "#/components/schemas/CreateOrUpdateSubscriberItem"
+                    },
+                    "type": "array",
+                    "x-order": 0
+                  }
+                },
+                "required": [
+                  "subscribers"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "x-originalParamName": "Body"
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchCreateOrUpdateRes"
+                }
+              }
+            },
+            "description": "BatchCreateOrUpdateRes"
+          },
+          "400": {
+            "description": ""
+          },
+          "429": {
+            "description": ""
+          }
+        },
+        "summary": "Batch create or update subscribers.",
+        "tags": [
+          "subscriber"
+        ]
+      }
+    },
+    "/subscribers/{id_or_email}": {
+      "get": {
+        "operationId": "retrieveSubscriber",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id_or_email",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriberRes"
+                }
+              }
+            },
+            "description": "SubscriberRes"
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "summary": "Retrieve a subscriber.",
+        "tags": [
+          "subscriber"
+        ]
+      }
+    },
+    "/subscribers/{id_or_email}/segments": {
+      "delete": {
+        "operationId": "removeSubscriberFromSegments",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id_or_email",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "*/*": {
+              "schema": {
+                "properties": {
+                  "segment_ids": {
+                    "description": "An array of identifiers of the segments.",
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array",
+                    "x-order": 0
+                  }
+                },
+                "required": [
+                  "segment_ids"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "x-originalParamName": "Body"
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriberRes"
+                }
+              }
+            },
+            "description": "SubscriberRes"
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "summary": "Remove the subscriber from segments.",
+        "tags": [
+          "subscriber"
+        ]
+      },
+      "post": {
+        "operationId": "addSubscriberToSegments",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id_or_email",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "*/*": {
+              "schema": {
+                "properties": {
+                  "segment_ids": {
+                    "description": "An array of identifiers of the segments.",
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array",
+                    "x-order": 0
+                  }
+                },
+                "required": [
+                  "segment_ids"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "x-originalParamName": "Body"
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriberRes"
+                }
+              }
+            },
+            "description": "SubscriberRes"
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "summary": "Add the subscriber to segments.",
+        "tags": [
+          "subscriber"
+        ]
+      }
+    },
+    "/subscribers/{id_or_email}/unsubscribe": {
+      "post": {
+        "operationId": "unsubscribeSubscriber",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id_or_email",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriberRes"
+                }
+              }
+            },
+            "description": "SubscriberRes"
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "summary": "Unsubscribe from all lists.",
+        "tags": [
+          "subscriber"
+        ]
+      }
+    },
+    "/webhooks": {
+      "get": {
+        "operationId": "listWebhooks",
+        "parameters": [
+          {
+            "description": "The page number. Defaults to 1.",
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "The number of records to be returned on each page. Defaults to 20. Maximum 100.",
+            "in": "query",
+            "name": "per_page",
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListWebhooksRes"
+                }
+              }
+            },
+            "description": "ListWebhooksRes"
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "summary": "List all webhooks.",
+        "tags": [
+          "webhook"
+        ]
+      },
+      "post": {
+        "operationId": "createWebhook",
+        "requestBody": {
+          "content": {
+            "*/*": {
+              "schema": {
+                "properties": {
+                  "name": {
+                    "description": "The webhook name.",
+                    "type": "string",
+                    "x-order": 0
+                  },
+                  "post_url": {
+                    "description": "The url that the webhook will post to.",
+                    "type": "string",
+                    "x-order": 1
+                  },
+                  "events": {
+                    "description": "An array specifying which events are enabled for webhook notifications.",
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array",
+                    "x-order": 2
+                  }
+                },
+                "required": [
+                  "name",
+                  "post_url",
+                  "events"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "x-originalParamName": "Body"
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookRes"
+                }
+              }
+            },
+            "description": "WebhookRes"
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "summary": "Create a webhook.",
+        "tags": [
+          "webhook"
+        ]
+      }
+    },
+    "/webhooks/{id}": {
+      "delete": {
+        "operationId": "deleteWebhook",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "summary": "Delete a webhook.",
+        "tags": [
+          "webhook"
+        ]
+      },
+      "get": {
+        "operationId": "retrieveWebhook",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookRes"
+                }
+              }
+            },
+            "description": "WebhookRes"
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "summary": "Retrieve a webhook.",
+        "tags": [
+          "webhook"
+        ]
+      },
+      "put": {
+        "operationId": "updateWebhook",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "*/*": {
+              "schema": {
+                "properties": {
+                  "name": {
+                    "description": "The webhook name.",
+                    "type": "string",
+                    "x-order": 0
+                  },
+                  "post_url": {
+                    "description": "The url that the webhook will post to.",
+                    "type": "string",
+                    "x-order": 1
+                  },
+                  "events": {
+                    "description": "An array specifying which events are enabled for webhook notifications.",
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array",
+                    "x-order": 2
+                  }
+                },
+                "type": "object"
+              }
+            }
+          },
+          "x-originalParamName": "Body"
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookRes"
+                }
+              }
+            },
+            "description": "WebhookRes"
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "summary": "Update a webhook.",
+        "tags": [
+          "webhook"
+        ]
+      }
+    },
+    "/workflows": {
+      "get": {
+        "operationId": "listWorkflows",
+        "parameters": [
+          {
+            "description": "filter by workflow statuses e.g. statuses=active,paused. Default is all statuses",
+            "in": "query",
+            "name": "statuses",
+            "schema": {
+              "items": {
+                "enum": [
+                  "active",
+                  "paused",
+                  "draft"
+                ],
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          {
+            "description": "Default = 1",
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Default = 10",
+            "in": "query",
+            "name": "perPage",
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListWorkflowsRes"
+                }
+              }
+            },
+            "description": "ListWorkflowsRes"
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "summary": "List workflows.",
+        "tags": [
+          "workflow"
+        ]
+      }
+    },
+    "/workflows/{workflow_id}/subscribers": {
+      "post": {
+        "description": "<br><b>Notes:</b>\n<ul>\n<li>In order for a subscriber to be added to a workflow subsequent times, (1) the subscriber has to have already completed the workflow, i.e. they cannot currently be active in the workflow, and (2) the \"Allow repeat subscribers\" setting for the workflow must be toggled on.</li>\n<li>Subscribers cannot be added to abandoned cart workflows using this endpoint.</li>\n</ul>",
+        "operationId": "addSubscriberToWorkflow",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workflow_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "*/*": {
+              "schema": {
+                "properties": {
+                  "id": {
+                    "description": "`id` is required if `email` is not present",
+                    "type": "string",
+                    "x-order": 0
+                  },
+                  "email": {
+                    "description": "`email` is required if `id` is not present",
+                    "type": "string",
+                    "x-order": 1
+                  }
+                },
+                "type": "object"
+              }
+            }
+          },
+          "x-originalParamName": "Body"
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "400": {
+            "description": ""
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "summary": "Add a subscriber to workflow.",
+        "tags": [
+          "workflow"
+        ]
+      }
+    },
+    "/workflows/{workflow_id}/subscribers/{id_or_email}": {
+      "delete": {
+        "operationId": "removeSubscriberFromWorkflow",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workflow_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id_or_email",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "400": {
+            "description": ""
+          },
+          "404": {
+            "description": ""
+          }
+        },
+        "summary": "Remove a subscriber from workflow.",
+        "tags": [
+          "workflow"
+        ]
+      }
+    }
+  },
+  "security": [
+    {
+      "api_key": []
+    },
+    {
+      "oauth2": []
+    }
+  ],
+  "servers": [
+    {
+      "description": "Default server",
+      "url": "https://api.flodesk.com/v1"
+    }
+  ],
+  "tags": [
+    {
+      "description": "Subscriber API",
+      "name": "subscriber",
+      "x-displayName": "Subscriber"
+    },
+    {
+      "description": "Segment API",
+      "name": "segment",
+      "x-displayName": "Segment"
+    },
+    {
+      "description": "Custom Field API",
+      "name": "custom-field",
+      "x-displayName": "Custom Field"
+    },
+    {
+      "description": "Workflow API",
+      "name": "workflow",
+      "x-displayName": "Workflow"
+    },
+    {
+      "description": "Webhook API",
+      "name": "webhook",
+      "x-displayName": "Webhook"
+    },
+    {
+      "description": "Webhook Events",
+      "name": "webhook-event",
+      "x-displayName": "Webhook Events"
+    }
+  ],
+  "x-tagGroups": [
+    {
+      "name": "REST API",
+      "tags": [
+        "subscriber",
+        "segment",
+        "workflow",
+        "custom-field",
+        "webhook",
+        "webhook-event"
+      ]
+    }
+  ],
+  "x-webhooks": {
+    "subscriber.added_to_segment": {
+      "post": {
+        "description": "This event is triggered when a subscriber is added to a segment in your Flodesk account.",
+        "operationId": "subscriber.added_to_segment",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubscriberAddedToSegmentEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "2XX": {
+            "description": "Return any 2XX status to indicate that the data was received successfully"
+          }
+        },
+        "security": [],
+        "summary": "subscriber.added_to_segment",
+        "tags": [
+          "webhook-event"
+        ]
+      }
+    },
+    "subscriber.created": {
+      "post": {
+        "description": "This event is triggered when a subscriber is created in your Flodesk account.",
+        "operationId": "subscriber.created",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubscriberCreatedEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "2XX": {
+            "description": "Return any 2XX status to indicate that the data was received successfully"
+          }
+        },
+        "security": [],
+        "summary": "subscriber.created",
+        "tags": [
+          "webhook-event"
+        ]
+      }
+    },
+    "subscriber.unsubscribed": {
+      "post": {
+        "description": "This event is triggered when a subscriber is unsubscribed from all mailings.",
+        "operationId": "subscriber.unsubscribed",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubscriberUnsubscribedEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "2XX": {
+            "description": "Return any 2XX status to indicate that the data was received successfully"
+          }
+        },
+        "security": [],
+        "summary": "subscriber.unsubscribed",
+        "tags": [
+          "webhook-event"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,51 @@
+module Flodesk
+  class Error < StandardError
+    def self.from_response: (
+      status: Integer, ?body: untyped, ?headers: Hash[untyped, untyped]
+    ) -> APIError
+  end
+
+  # An error carrying an HTTP response.
+  class APIError < Error
+    attr_reader status: Integer
+    attr_reader code: String?
+    attr_reader raw_body: untyped
+
+    def initialize: (
+      status: Integer, ?body: untyped, ?headers: Hash[untyped, untyped]
+    ) -> void
+
+    def rate_limit: () -> Integer?
+    def rate_limit_remaining: () -> Integer?
+  end
+
+  class BadRequestError < APIError
+  end
+
+  class AuthenticationError < APIError
+  end
+
+  class NotFoundError < APIError
+  end
+
+  class ServerError < APIError
+  end
+
+  class RateLimitError < APIError
+    # Always nil: the API sends no rate-limit reset header.
+    def retry_after: () -> nil
+  end
+
+  class ConnectionError < Error
+  end
+
+  class TimeoutError < Error
+  end
+
+  # Raised when a batch operation reports per-record failures inside a 200.
+  class PartialFailureError < Error
+    attr_reader result: BatchResult
+
+    def initialize: (result: BatchResult) -> void
+  end
+end

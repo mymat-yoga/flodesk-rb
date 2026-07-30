@@ -1,0 +1,124 @@
+module Flodesk
+  module Resources
+    # Shared behavior for resource namespaces.
+    class Base
+      MAX_PER_PAGE: Integer
+      UNRESERVED: Regexp
+
+      def initialize: (Client) -> void
+    end
+
+    class Subscribers < Base
+      PATH: String
+      MAX_SEGMENTS: Integer
+      MAX_BATCH_SIZE: Integer
+
+      def list: (
+        ?page: Integer?, ?per_page: Integer?,
+        ?status: (Symbol | String)?, ?segment_id: String?
+      ) -> Page
+
+      def auto_paging_each: (
+        ?page: Integer?, ?per_page: Integer?,
+        ?status: (Symbol | String)?, ?segment_id: String?
+      ) { (Subscriber) -> void } -> void
+        | (
+        ?page: Integer?, ?per_page: Integer?,
+        ?status: (Symbol | String)?, ?segment_id: String?
+      ) -> Enumerator[Subscriber, void]
+
+      def retrieve: (String) -> Subscriber?
+      def upsert: (**untyped) -> Subscriber?
+      def batch_upsert: (
+        Array[Hash[untyped, untyped]], ?raise_on_failure: bool
+      ) -> BatchResult
+      def add_to_segments: (String, Array[String]) -> Subscriber?
+      def remove_from_segments: (String, Array[String]) -> Subscriber?
+      def unsubscribe: (String) -> Subscriber?
+    end
+
+    class Segments < Base
+      PATH: String
+
+      def list: (?page: Integer?, ?per_page: Integer?) -> Page
+      def auto_paging_each: (?page: Integer?, ?per_page: Integer?) { (Segment) -> void } -> void
+                          | (?page: Integer?, ?per_page: Integer?) -> Enumerator[Segment, void]
+      def retrieve: (String) -> Segment?
+      def create: (name: String, ?color: String?) -> Segment?
+      def colors: () -> untyped
+    end
+
+    class CustomFields < Base
+      PATH: String
+
+      def list: (?page: Integer?, ?per_page: Integer?) -> Page
+      def auto_paging_each: (?page: Integer?, ?per_page: Integer?) { (CustomField) -> void } -> void
+                          | (?page: Integer?, ?per_page: Integer?) -> Enumerator[CustomField, void]
+      def list_all: () -> Array[CustomField]
+      def create: (label: String) -> CustomField?
+    end
+
+    class Workflows < Base
+      PATH: String
+      # This endpoint alone spells its page-size parameter `perPage`.
+      PER_PAGE_KEY: String
+
+      def list: (
+        ?page: Integer?, ?per_page: Integer?,
+        ?statuses: (String | Symbol | Array[String | Symbol])?
+      ) -> Page
+
+      def auto_paging_each: (
+        ?page: Integer?, ?per_page: Integer?,
+        ?statuses: (String | Symbol | Array[String | Symbol])?
+      ) { (Workflow) -> void } -> void
+        | (
+        ?page: Integer?, ?per_page: Integer?,
+        ?statuses: (String | Symbol | Array[String | Symbol])?
+      ) -> Enumerator[Workflow, void]
+
+      # Returns nil: the endpoint responds 204.
+      def add_subscriber: (String, ?id: String?, ?email: String?) -> nil
+      # Returns nil: the endpoint responds 204.
+      def remove_subscriber: (String, String) -> nil
+    end
+
+    class Webhooks < Base
+      PATH: String
+
+      def list: (?page: Integer?, ?per_page: Integer?) -> Page
+      def auto_paging_each: (?page: Integer?, ?per_page: Integer?) { (Webhook) -> void } -> void
+                          | (?page: Integer?, ?per_page: Integer?) -> Enumerator[Webhook, void]
+      def retrieve: (String) -> Webhook?
+      def create: (
+        name: String, post_url: String, events: (String | Array[String])
+      ) -> Webhook?
+      def update: (
+        String, ?name: String?, ?post_url: String?,
+        ?events: (String | Array[String])?
+      ) -> Webhook?
+      # Returns nil: the endpoint responds 204.
+      def delete: (String) -> nil
+    end
+
+    class Campaigns < Base
+      PATH: String
+      # This endpoint's filters are PascalCase, unlike anything else in the API.
+      FILTER_KEYS: Hash[Symbol, String]
+
+      def list: (?page: Integer?, ?per_page: Integer?, **untyped) -> Page
+      def auto_paging_each: (
+        ?page: Integer?, ?per_page: Integer?, **untyped
+      ) { (Campaign) -> void } -> void
+        | (?page: Integer?, ?per_page: Integer?, **untyped) -> Enumerator[Campaign, void]
+
+      # NEVER retried: a retry could send the campaign to the whole list twice.
+      def publish_canva: (
+        ?bundle_url: String?, ?title: String?, ?design_token: String?,
+        ?page_id: String?, ?campaign_id: String?
+      ) -> untyped
+
+      def canva_design_state: () -> untyped
+    end
+  end
+end

@@ -1,0 +1,91 @@
+module Flodesk
+  # Authentication strategies. Only API-key (HTTP Basic) auth is implemented.
+  module Auth
+    class ApiKey
+      def initialize: (String) -> void
+      def apply: (untyped) -> untyped
+      def inspect: () -> String
+      def to_s: () -> String
+    end
+  end
+
+  # A completed HTTP response.
+  class Response
+    attr_reader status: Integer
+    attr_reader headers: Hash[String, untyped]
+    attr_reader body: untyped
+
+    def rate_limit: () -> Integer?
+    def rate_limit_remaining: () -> Integer?
+    # Always nil: the API sends no rate-limit reset header.
+    def rate_limit_reset: () -> nil
+  end
+
+  # Decides whether a failed request may be retried.
+  class RetryPolicy
+    attr_reader idempotent: bool
+    attr_reader retry_rate_limit: bool
+    attr_reader max_retries: Integer
+
+    def initialize: (
+      idempotent: bool, retry_rate_limit: bool, max_retries: Integer
+    ) -> void
+
+    def retry?: (Exception, Integer) -> bool
+  end
+
+  # Executes HTTP requests. Safe to share across threads.
+  class Connection
+    TIMEOUT_ERRORS: Array[Class]
+    CONNECTION_ERRORS: Array[Class]
+
+    def initialize: (Client) -> void
+
+    def request: (
+      Symbol, String,
+      ?query: Hash[String, untyped]?,
+      ?body: Hash[String, untyped]?,
+      ?idempotent: bool?,
+      ?retry_rate_limit: bool
+    ) -> Response
+  end
+
+  # Entry point to the Flodesk API. Frozen at construction.
+  class Client
+    DEFAULT_OPEN_TIMEOUT: Integer
+    DEFAULT_READ_TIMEOUT: Integer
+    DEFAULT_MAX_RETRIES: Integer
+    DEFAULT_BACKOFF_BASE: Float
+
+    attr_reader api_key: String
+    attr_reader app_name: String?
+    attr_reader base_url: String
+    attr_reader open_timeout: Numeric
+    attr_reader read_timeout: Numeric
+    attr_reader max_retries: Integer
+    attr_reader backoff_base: Numeric
+    attr_reader auth: Auth::ApiKey
+    attr_reader subscribers: Resources::Subscribers
+    attr_reader segments: Resources::Segments
+    attr_reader custom_fields: Resources::CustomFields
+    attr_reader workflows: Resources::Workflows
+    attr_reader webhooks: Resources::Webhooks
+    attr_reader campaigns: Resources::Campaigns
+
+    def initialize: (
+      ?api_key: String?,
+      ?app_name: String?,
+      ?base_url: String,
+      ?open_timeout: Numeric,
+      ?read_timeout: Numeric,
+      ?max_retries: Integer,
+      ?backoff_base: Numeric
+    ) -> void
+
+    def user_agent: () -> String
+    def rate_limit: () -> RateLimit::State?
+    def request: (*untyped, **untyped) -> Response
+    def inspect: () -> String
+    def to_s: () -> String
+  end
+end

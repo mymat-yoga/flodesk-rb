@@ -1,6 +1,17 @@
 # frozen_string_literal: true
 
-require "flodesk/rb"
+require "flodesk"
+require "webmock/rspec"
+require "tmpdir"
+require "fileutils"
+require "stringio"
+
+# Block every real outbound connection. The suite must be hermetic: a spec that
+# accidentally reaches api.flodesk.com would be slow, flaky, and could mutate a
+# real account. WebMock raises on any unstubbed request.
+WebMock.disable_net_connect!(allow_localhost: false)
+
+Dir[File.join(__dir__, "support", "**", "*.rb")].each { |f| require f }
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

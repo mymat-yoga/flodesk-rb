@@ -1,5 +1,41 @@
 AllCops:
   TargetRubyVersion: 3.2
+  NewCops: enable
+  SuggestExtensions: false
+
+# Specs are declarative: long describe blocks and long example bodies are the
+# normal shape, not a smell.
+Metrics/BlockLength:
+  Exclude:
+    - "spec/**/*"
+    - "*.gemspec"
+
+Metrics/ModuleLength:
+  Exclude:
+    - "spec/**/*"
+
+# The cop targets long positional signatures, where argument order becomes a
+# hazard. Keyword arguments are self-describing and carry no such risk.
+Metrics/ParameterLists:
+  CountKeywordArgs: false
+
+# RuboCop's default of 10 lines is tighter than this codebase benefits from.
+# A constructor that validates its arguments and assembles the resource
+# namespaces reads better as one method than split for the metric's sake.
+Metrics/MethodLength:
+  Max: 20
+
+# A constructor that normalizes and freezes nine configuration values is
+# inherently assignment-heavy; splitting it further would obscure rather than
+# clarify what the client is configured with.
+Metrics/AbcSize:
+  Max: 25
+
+# Connection is a transport: request building, response parsing, retry and
+# instrumentation belong together. The retry decision itself is already
+# extracted into RetryPolicy.
+Metrics/ClassLength:
+  Max: 150
 
 Style/StringLiterals:
   EnforcedStyle: double_quotes

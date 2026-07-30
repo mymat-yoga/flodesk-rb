@@ -1,0 +1,61 @@
+# Core module, configuration constants, and shared type aliases.
+module Flodesk
+  VERSION: String
+  DEFAULT_BASE_URL: String
+  MAX_BACKOFF_SECONDS: Integer
+
+  # A parsed JSON object as received from the API.
+  type payload = Hash[String, untyped]
+
+  # An enum value: a Symbol when documented, otherwise the raw String.
+  type enum_value = Symbol | String | nil
+
+  # An ISO 8601 timestamp: a Time when parseable, otherwise the raw String.
+  type timestamp = Time | String | nil
+
+  # Closed enumerations documented by the API description.
+  module Enums
+    SUBSCRIBER_STATUSES: Array[String]
+    SUBSCRIBER_SOURCES: Array[String]
+    WORKFLOW_STATUSES: Array[String]
+    CAMPAIGN_STATUSES: Array[String]
+    WEBHOOK_EVENTS: Array[String]
+  end
+
+  module Coercion
+    def self.enum: (untyped, Array[String]) -> enum_value
+    def self.time: (untyped) -> timestamp
+    def self.array_of: (untyped, untyped) -> Array[untyped]
+    def self.string_hash: (untyped) -> Hash[String, String?]
+    def self.snapshot: (untyped) -> untyped
+  end
+
+  module Redaction
+    SENSITIVE_KEYS: Array[String]
+    PLACEHOLDER: String
+    EMAIL_IN_SEGMENT: Regexp
+
+    def self.path: (untyped) -> String
+    def self.payload: (untyped) -> untyped
+  end
+
+  module Instrumentation
+    EVENT_NAME: String
+
+    def self.available?: () -> bool
+    def self.request: (
+      method: Symbol, path: String, status: Integer,
+      duration: Float, attempt: Integer, rate_limit_remaining: Integer?
+    ) -> void
+  end
+
+  module RateLimit
+    class State
+      attr_reader limit: Integer?
+      attr_reader remaining: Integer?
+    end
+
+    def self.record: (Client, Response) -> void
+    def self.last: (Client) -> State?
+  end
+end
