@@ -67,6 +67,35 @@ module Flodesk
         )
       end
 
+      # POST /campaigns/studio — publishes an email campaign. Returns 201.
+      #
+      # ---------------------------------------------------------------------
+      # NEVER RETRIED. Same policy as {#publish_canva}, for the same reason.
+      #
+      # Both endpoints are summarized upstream as publishing a *draft*, which
+      # is a weaker hazard than an immediate send. The policy does not lean on
+      # that distinction: "draft" is a one-line summary in the specification,
+      # not a guarantee, and the failure it would license is unrecoverable and
+      # visible to every recipient. Retrying is the bet that cannot be unmade,
+      # so it is not taken.
+      # ---------------------------------------------------------------------
+      #
+      # Returns the raw response body: the `PublishStudioRes` schema declares
+      # only `id` and `url`, which is not a Campaign.
+      def publish_studio(html: nil, title: nil, campaign_id: nil, asset_id: nil)
+        post(
+          "#{PATH}/studio",
+          body: {
+            "html" => html,
+            "title" => title,
+            "campaign_id" => campaign_id,
+            "asset_id" => asset_id
+          }.compact,
+          idempotent: false,
+          retry_rate_limit: false
+        )
+      end
+
       # GET /campaigns/canva/design-state
       #
       # Returns the raw response body: `CanvaDesignStateRes` declares only

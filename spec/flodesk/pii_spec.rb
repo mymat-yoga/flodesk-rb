@@ -45,6 +45,48 @@ RSpec.describe "PII containment" do
     end
   end
 
+  describe "validation error messages" do
+    # Rejecting unknown keys means building an error message out of caller
+    # input. The key names are safe to echo; the values are not — an unknown
+    # field is exactly where someone puts a phone number or a date of birth.
+    it "names the rejected field but never its value" do
+      expect { client.subscribers.upsert(email: email, ssn: "123-45-6789") }
+        .to raise_error(ArgumentError) { |e|
+          expect(e.message).to include("ssn")
+          expect(e.message).not_to include("123-45-6789")
+        }
+    end
+
+    it "does not echo the subscriber's email when rejecting a field" do
+      expect { client.subscribers.upsert(email: email, nope: 1) }
+        .to raise_error(ArgumentError) { |e|
+          expect(e.message).not_to include(email)
+          expect(e.message).not_to include("private")
+        }
+    end
+
+    # Passing one record instead of an array is an easy mistake, and
+    # `each_with_index` over a Hash yields [[key, value], 0] — so the value was
+    # being parsed as a field name and echoed straight into the message.
+    it "does not leak an email when a single record is passed instead of an array" do
+      expect { client.subscribers.batch_upsert({ email: email }) }
+        .to raise_error(ArgumentError) { |e|
+          expect(e.message).not_to include(email)
+          expect(e.message).to match(/Array/i)
+        }
+    end
+
+    it "identifies a batch record by index rather than by email" do
+      records = [{ email: "a@b.com" }, { email: email, nope: 1 }]
+
+      expect { client.subscribers.batch_upsert(records) }
+        .to raise_error(ArgumentError) { |e|
+          expect(e.message).to include("index 1")
+          expect(e.message).not_to include(email)
+        }
+    end
+  end
+
   describe "the API key" do
     it "never appears in the client's inspect output" do
       expect(client.inspect).not_to include(api_key)

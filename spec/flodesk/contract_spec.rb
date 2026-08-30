@@ -43,6 +43,7 @@ module ContractFixtures
     "deleteWebhook" => %i[webhooks delete],
     "listCampaigns" => %i[campaigns list],
     "publishCanvaEmail" => %i[campaigns publish_canva],
+    "publishStudioEmail" => %i[campaigns publish_studio],
     "getCanvaDesignState" => %i[campaigns canva_design_state]
   }.freeze
 
@@ -55,6 +56,23 @@ module ContractFixtures
     "Sort" => :sort,
     "Status" => :status,
     "SharedAsTemplate" => :shared_as_template
+  }.freeze
+
+  # Documented request-body properties that reach the API through something
+  # other than a same-named keyword argument. Every entry is a deliberate
+  # interface decision, and naming it here is what keeps the coverage example
+  # below honest: a property that is neither a keyword nor listed here is an
+  # unimplemented field, not an accepted one.
+  BODY_EXCEPTIONS = {
+    # Taken positionally, since a subscriber write is meaningless without them.
+    "addSubscriberToSegments" => { "segment_ids" => :positional },
+    "removeSubscriberFromSegments" => { "segment_ids" => :positional },
+    # The array is the method's only argument; the API wraps it in an object.
+    "batchCreateOrUpdateSubscribers" => { "subscribers" => :positional },
+    # `upsert(**attrs)` accepts a keyrest, so its accepted set is the
+    # SUBSCRIBER_FIELDS whitelist rather than a signature. Verified separately
+    # and exhaustively by the example below.
+    "createOrUpdateSubscriber" => :whitelist
   }.freeze
 
   # Response schema -> the value object that models it.
@@ -123,9 +141,9 @@ RSpec.describe "OpenAPI contract" do
       expect(unimplemented).to be_empty
     end
 
-    it "covers all 25 documented operations" do
-      expect(operations.size).to eq(25)
-      expect(operation_map.size).to eq(25)
+    it "covers all 26 documented operations" do
+      expect(operations.size).to eq(26)
+      expect(operation_map.size).to eq(26)
     end
   end
 
@@ -156,6 +174,61 @@ RSpec.describe "OpenAPI contract" do
       expect(Flodesk::Resources::Workflows::PER_PAGE_KEY).to eq("perPage")
       expect(Flodesk::Resources::Campaigns::FILTER_KEYS.values)
         .to contain_exactly("Search", "OrderBy", "Sort", "Status", "SharedAsTemplate")
+    end
+  end
+
+  describe "request body coverage" do
+    # The spec declares request bodies under a `*/*` content type and reaches
+    # for `$ref` in some operations and an inline schema in others.
+    def body_properties(operation)
+      content = operation.dig("requestBody", "content")
+      return {} if content.nil? || content.empty?
+
+      schema = content.values.first["schema"]
+      schema = schemas.fetch(schema["$ref"].split("/").last) if schema["$ref"]
+
+      schema["properties"] || {}
+    end
+
+    # The counterpart to the query-parameter example. Without this, a change to
+    # a documented request body sails through green: the client would simply
+    # stop sending a field, and every stubbed spec would still pass.
+    it "accepts a keyword for every documented request body property" do
+      unaccepted = operations.flat_map do |o|
+        properties = body_properties(o[:op]).keys
+        next [] if properties.empty?
+
+        exceptions = ContractFixtures::BODY_EXCEPTIONS[o[:id]]
+        next [] if exceptions == :whitelist
+
+        resource, method = operation_map.fetch(o[:id])
+        params = client.public_send(resource).method(method).parameters
+        accepted = params.filter_map { |type, name| name if %i[key keyreq].include?(type) }
+
+        properties
+          .reject { |name| accepted.include?(name.to_sym) }
+          .reject { |name| exceptions&.key?(name) }
+          .map { |name| "#{o[:id]} does not accept #{name}" }
+      end
+
+      expect(unaccepted).to be_empty
+    end
+
+    it "declares no body exception for an operation that has no request body" do
+      with_bodies = operations.select { |o| body_properties(o[:op]).any? }.map { |o| o[:id] }
+
+      expect(ContractFixtures::BODY_EXCEPTIONS.keys - with_bodies).to be_empty
+    end
+
+    # `upsert` takes a keyrest, so its accepted set lives in a constant rather
+    # than a signature. This is what makes rejecting unknown keys safe: a field
+    # added upstream fails the build here instead of turning into a runtime
+    # ArgumentError for a value the API actually accepts.
+    it "whitelists exactly the documented subscriber write fields" do
+      documented = schemas.fetch("CreateOrUpdateSubscriberItem")["properties"].keys.map(&:to_sym)
+
+      expect(Flodesk::Resources::Subscribers::SUBSCRIBER_FIELDS)
+        .to match_array(documented)
     end
   end
 

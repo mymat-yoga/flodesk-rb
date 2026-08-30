@@ -118,6 +118,11 @@ module Flodesk
         ?page_id: String?, ?campaign_id: String?
       ) -> untyped
 
+      # NEVER retried, for the same reason as publish_canva.
+      def publish_studio: (
+        ?html: String?, ?title: String?, ?campaign_id: String?, ?asset_id: String?
+      ) -> untyped
+
       def canva_design_state: () -> untyped
     end
   end

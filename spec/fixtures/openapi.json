@@ -7,15 +7,13 @@
             "items": {
               "$ref": "#/components/schemas/SubscriberRes"
             },
-            "type": "array",
-            "x-order": 0
+            "type": "array"
           },
           "failures": {
             "items": {
               "$ref": "#/components/schemas/BatchItemError"
             },
-            "type": "array",
-            "x-order": 1
+            "type": "array"
           }
         },
         "type": "object"
@@ -25,28 +23,23 @@
           "index": {
             "description": "The zero-based index of the subscriber in the request array.",
             "format": "int64",
-            "type": "integer",
-            "x-order": 0
+            "type": "integer"
           },
           "email": {
             "description": "The email that was submitted for this subscriber.",
-            "type": "string",
-            "x-order": 1
+            "type": "string"
           },
           "id": {
             "description": "The id that was submitted for this subscriber.",
-            "type": "string",
-            "x-order": 2
+            "type": "string"
           },
           "code": {
             "description": "Error code.",
-            "type": "string",
-            "x-order": 3
+            "type": "string"
           },
           "message": {
             "description": "Human-readable error message.",
-            "type": "string",
-            "x-order": 4
+            "type": "string"
           }
         },
         "title": "BatchItemError represents a single failure in a batch operation.",
@@ -55,8 +48,7 @@
       "CampaignItem": {
         "properties": {
           "id": {
-            "type": "string",
-            "x-order": 0
+            "type": "string"
           },
           "status": {
             "enum": [
@@ -68,26 +60,21 @@
               "done",
               "failed"
             ],
-            "type": "string",
-            "x-order": 1
+            "type": "string"
           },
           "name": {
-            "type": "string",
-            "x-order": 2
+            "type": "string"
           },
           "subject": {
-            "type": "string",
-            "x-order": 3
+            "type": "string"
           },
           "created_at": {
             "format": "date-time",
-            "type": "string",
-            "x-order": 4
+            "type": "string"
           },
           "updated_at": {
             "format": "date-time",
-            "type": "string",
-            "x-order": 5
+            "type": "string"
           }
         },
         "type": "object"
@@ -95,12 +82,10 @@
       "CanvaDesignStateRes": {
         "properties": {
           "design_id": {
-            "type": "string",
-            "x-order": 0
+            "type": "string"
           },
           "campaign_id": {
-            "type": "string",
-            "x-order": 1
+            "type": "string"
           }
         },
         "type": "object"
@@ -109,54 +94,45 @@
         "properties": {
           "id": {
             "description": "The subscriber's `id`. Either `email` or `id` must be included.",
-            "type": "string",
-            "x-order": 0
+            "type": "string"
           },
           "email": {
             "description": "The subscriber's `email`. Either `email` or `id` must be included.",
-            "type": "string",
-            "x-order": 1
+            "type": "string"
           },
           "first_name": {
             "description": "The subscriber's first name.",
-            "type": "string",
-            "x-order": 2
+            "type": "string"
           },
           "last_name": {
             "description": "The subscriber's last name.",
-            "type": "string",
-            "x-order": 3
+            "type": "string"
           },
           "custom_fields": {
             "additionalProperties": {
               "type": "string"
             },
             "description": "An object containing custom field data.\nE.g. ``` \"favorite_color\": \"Lavender\" ```.",
-            "type": "object",
-            "x-order": 4
+            "type": "object"
           },
           "segment_ids": {
             "description": "The segments this subscriber will be added to. Cap at `50`.",
             "items": {
               "type": "string"
             },
-            "type": "array",
-            "x-order": 5
+            "type": "array"
           },
           "double_optin": {
             "description": "Whether or not to require the subscriber to confirm subscription via email.\n\nThis option is only available to set with new subscriber creation. Default to `false` if not indicated.",
-            "type": "boolean",
-            "x-order": 6
+            "type": "boolean"
           },
           "optin_ip": {
             "description": "IP address from which the subscriber confirmed their opt-in.",
-            "type": "string",
-            "x-order": 7
+            "type": "string"
           },
           "optin_timestamp": {
             "description": "The date and time the subscribers confirmed their opt-in in ISO 8601 format.\nE.g. `2023-01-02T15:04:05.999Z`.",
-            "type": "string",
-            "x-order": 8
+            "type": "string"
           }
         },
         "title": "CreateOrUpdateSubscriberItem represents a single subscriber payload.",
@@ -166,13 +142,11 @@
         "properties": {
           "key": {
             "description": "The unique identifier of the custom field.",
-            "type": "string",
-            "x-order": 0
+            "type": "string"
           },
           "label": {
             "description": "A friendly display label of the custom field.",
-            "type": "string",
-            "x-order": 1
+            "type": "string"
           }
         },
         "type": "object"
@@ -189,8 +163,7 @@
             "items": {
               "$ref": "#/components/schemas/CampaignItem"
             },
-            "type": "array",
-            "x-order": 0
+            "type": "array"
           }
         },
         "type": "object"
@@ -204,15 +177,13 @@
       "ListCustomFieldsRes": {
         "properties": {
           "meta": {
-            "$ref": "#/components/schemas/PaginationRes",
-            "x-order": 0
+            "$ref": "#/components/schemas/PaginationRes"
           },
           "data": {
             "items": {
               "$ref": "#/components/schemas/CustomFieldRes"
             },
-            "type": "array",
-            "x-order": 1
+            "type": "array"
           }
         },
         "type": "object"
@@ -220,15 +191,13 @@
       "ListSegmentsRes": {
         "properties": {
           "meta": {
-            "$ref": "#/components/schemas/PaginationRes",
-            "x-order": 0
+            "$ref": "#/components/schemas/PaginationRes"
           },
           "data": {
             "items": {
               "$ref": "#/components/schemas/SegmentRes"
             },
-            "type": "array",
-            "x-order": 1
+            "type": "array"
           }
         },
         "type": "object"
@@ -236,15 +205,13 @@
       "ListSubscribersRes": {
         "properties": {
           "meta": {
-            "$ref": "#/components/schemas/PaginationRes",
-            "x-order": 0
+            "$ref": "#/components/schemas/PaginationRes"
           },
           "data": {
             "items": {
               "$ref": "#/components/schemas/SubscriberRes"
             },
-            "type": "array",
-            "x-order": 1
+            "type": "array"
           }
         },
         "type": "object"
@@ -252,15 +219,13 @@
       "ListWebhooksRes": {
         "properties": {
           "meta": {
-            "$ref": "#/components/schemas/PaginationRes",
-            "x-order": 0
+            "$ref": "#/components/schemas/PaginationRes"
           },
           "data": {
             "items": {
               "$ref": "#/components/schemas/WebhookRes"
             },
-            "type": "array",
-            "x-order": 1
+            "type": "array"
           }
         },
         "type": "object"
@@ -271,12 +236,10 @@
             "items": {
               "$ref": "#/components/schemas/WorkflowRes"
             },
-            "type": "array",
-            "x-order": 0
+            "type": "array"
           },
           "meta": {
-            "$ref": "#/components/schemas/PaginationRes",
-            "x-order": 1
+            "$ref": "#/components/schemas/PaginationRes"
           }
         },
         "type": "object"
@@ -285,23 +248,19 @@
         "properties": {
           "page": {
             "format": "int64",
-            "type": "integer",
-            "x-order": 0
+            "type": "integer"
           },
           "total_pages": {
             "format": "int64",
-            "type": "integer",
-            "x-order": 1
+            "type": "integer"
           },
           "per_page": {
             "format": "int64",
-            "type": "integer",
-            "x-order": 2
+            "type": "integer"
           },
           "total_items": {
             "format": "int64",
-            "type": "integer",
-            "x-order": 3
+            "type": "integer"
           }
         },
         "type": "object"
@@ -309,12 +268,21 @@
       "PublishCanvaRes": {
         "properties": {
           "id": {
-            "type": "string",
-            "x-order": 0
+            "type": "string"
           },
           "url": {
-            "type": "string",
-            "x-order": 1
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "PublishStudioRes": {
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
           }
         },
         "type": "object"
@@ -322,12 +290,10 @@
       "SegmentMini": {
         "properties": {
           "id": {
-            "type": "string",
-            "x-order": 0
+            "type": "string"
           },
           "name": {
-            "type": "string",
-            "x-order": 1
+            "type": "string"
           }
         },
         "type": "object"
@@ -336,30 +302,29 @@
         "properties": {
           "id": {
             "description": "A read-only generated unique id used to identify each segment record.",
-            "type": "string",
-            "x-order": 0
+            "type": "string"
           },
           "name": {
             "description": "Name of the segment.",
-            "type": "string",
-            "x-order": 1
+            "type": "string"
           },
           "total_active_subscribers": {
             "description": "The number of active subscribers within the segment.",
             "format": "int64",
-            "type": "integer",
-            "x-order": 2
+            "type": "integer"
           },
           "created_at": {
             "description": "The date and time the segment was created in ISO 8601 format.",
             "format": "date-time",
-            "type": "string",
-            "x-order": 3
+            "type": "string"
           },
           "color": {
             "description": "The color of the segment using a hex code. `Use GET List all segment colors`. to view available colors.",
-            "type": "string",
-            "x-order": 4
+            "type": "string"
+          },
+          "segment_type": {
+            "description": "The type of the segment: \"static\" or \"dynamic\".",
+            "type": "string"
           }
         },
         "type": "object"
@@ -368,27 +333,22 @@
         "properties": {
           "event_name": {
             "description": "The webhook notification's event name. E.g. `subscriber.created`.",
-            "type": "string",
-            "x-order": 0
+            "type": "string"
           },
           "event_time": {
             "description": "The timestamp indicates when the event occurred.",
             "format": "date-time",
-            "type": "string",
-            "x-order": 1
+            "type": "string"
           },
           "subscriber": {
-            "$ref": "#/components/schemas/SubscriberRes",
-            "x-order": 1
+            "$ref": "#/components/schemas/SubscriberRes"
           },
           "segment": {
-            "$ref": "#/components/schemas/SegmentMini",
-            "x-order": 2
+            "$ref": "#/components/schemas/SegmentMini"
           },
           "webhook_id": {
             "description": "The webhook's identifier.",
-            "type": "string",
-            "x-order": 2
+            "type": "string"
           }
         },
         "type": "object"
@@ -397,23 +357,19 @@
         "properties": {
           "event_name": {
             "description": "The webhook notification's event name. E.g. `subscriber.created`.",
-            "type": "string",
-            "x-order": 0
+            "type": "string"
           },
           "event_time": {
             "description": "The timestamp indicates when the event occurred.",
             "format": "date-time",
-            "type": "string",
-            "x-order": 1
+            "type": "string"
           },
           "subscriber": {
-            "$ref": "#/components/schemas/SubscriberRes",
-            "x-order": 1
+            "$ref": "#/components/schemas/SubscriberRes"
           },
           "webhook_id": {
             "description": "The webhook's identifier.",
-            "type": "string",
-            "x-order": 2
+            "type": "string"
           }
         },
         "type": "object"
@@ -422,26 +378,24 @@
         "properties": {
           "id": {
             "description": "A read-only generated unique id used to identify each subscriber record.",
-            "type": "string",
-            "x-order": 0
+            "type": "string"
           },
           "status": {
-            "description": "The subscriber's status.\n\n`active`: The subscriber is currently active to receive marketing emails.\n\n\n`unsubscribed`: The subscriber has opted out of marketing emails.\n\n\n`unconfirmed`: The subscriber is pending for double opt-in confirmation.\n\n\n`bounced`: The subscriber's address is undeliverable due to a hard bounce.\n\n\n`complained`: The subscriber marked an email as spam.\n\n\n`cleaned`: The subscriber was cleaned, learn more [here](https://help.flodesk.com/en/articles/4747969#how_can_i_find_out_which_email_addresses_have_been_cleaned).\n\n",
+            "description": "The subscriber's status.\n\n`active`: The subscriber is currently active to receive marketing emails.\n\n\n`unsubscribed`: The subscriber has opted out of marketing emails.\n\n\n`unconfirmed`: The subscriber is pending for double opt-in confirmation.\n\n\n`bounced`: The subscriber's address is undeliverable due to a hard bounce.\n\n\n`complained`: The subscriber marked an email as spam.\n\n\n`cleaned`: The subscriber was cleaned, learn more [here](https://help.flodesk.com/en/articles/4747969#how_can_i_find_out_which_email_addresses_have_been_cleaned).\n\n\n`archived`: The subscriber was archived.\n\n",
             "enum": [
               "active",
               "unsubscribed",
               "unconfirmed",
               "bounced",
               "complained",
-              "cleaned"
+              "cleaned",
+              "archived"
             ],
-            "type": "string",
-            "x-order": 1
+            "type": "string"
           },
           "email": {
             "description": "The subscriber's email address.",
-            "type": "string",
-            "x-order": 2
+            "type": "string"
           },
           "source": {
             "description": "The source from which the subscriber was added to your list.\n\n`manual`: Added manually.\n\n\n`csv`: Via CSV upload.\n\n\n`form_optin`: Opted-in via a form.\n\n\n`integration`: Added through an integration. E.g. Shopify.\n\n\n`checkout`: Opted-in via a Flodesk checkout.\n\n",
@@ -452,51 +406,43 @@
               "integration",
               "checkout"
             ],
-            "type": "string",
-            "x-order": 3
+            "type": "string"
           },
           "first_name": {
             "description": "The subscriber's first name.",
-            "type": "string",
-            "x-order": 4
+            "type": "string"
           },
           "last_name": {
             "description": "The subscriber's last name.",
-            "type": "string",
-            "x-order": 5
+            "type": "string"
           },
           "segments": {
             "description": "Segments that the subscriber was added to. Cap at `50`.",
             "items": {
               "$ref": "#/components/schemas/SegmentMini"
             },
-            "type": "array",
-            "x-order": 6
+            "type": "array"
           },
           "custom_fields": {
             "additionalProperties": {
               "type": "string"
             },
             "description": "An object containing custom field data.\nE.g. ``` \"favorite_color\": \"Lavender\" ```.",
-            "type": "object",
-            "x-order": 7
+            "type": "object"
           },
           "optin_ip": {
             "description": "IP address from which the subscriber confirmed their opt-in.",
-            "type": "string",
-            "x-order": 8
+            "type": "string"
           },
           "optin_timestamp": {
             "description": "The date and time the subscribers confirmed their opt-in in ISO 8601 format.\nE.g. `2023-01-02T15:04:05.999Z`.",
             "format": "date-time",
-            "type": "string",
-            "x-order": 9
+            "type": "string"
           },
           "created_at": {
             "description": "The date and time the subscriber was added to your list in ISO 8601 format.",
             "format": "date-time",
-            "type": "string",
-            "x-order": 10
+            "type": "string"
           }
         },
         "type": "object"
@@ -505,23 +451,19 @@
         "properties": {
           "event_name": {
             "description": "The webhook notification's event name. E.g. `subscriber.created`.",
-            "type": "string",
-            "x-order": 0
+            "type": "string"
           },
           "event_time": {
             "description": "The timestamp indicates when the event occurred.",
             "format": "date-time",
-            "type": "string",
-            "x-order": 1
+            "type": "string"
           },
           "subscriber": {
-            "$ref": "#/components/schemas/SubscriberRes",
-            "x-order": 1
+            "$ref": "#/components/schemas/SubscriberRes"
           },
           "webhook_id": {
             "description": "The webhook's identifier.",
-            "type": "string",
-            "x-order": 2
+            "type": "string"
           }
         },
         "type": "object"
@@ -530,27 +472,23 @@
         "properties": {
           "id": {
             "description": "A read-only generated unique id used to identify each webhook record.",
-            "type": "string",
-            "x-order": 0
+            "type": "string"
           },
           "post_url": {
             "description": "The url that the webhook will post to.",
-            "type": "string",
-            "x-order": 1
+            "type": "string"
           },
           "events": {
             "description": "An array specifying which events are enabled for webhook notifications.",
             "items": {
               "type": "string"
             },
-            "type": "array",
-            "x-order": 2
+            "type": "array"
           },
           "created_at": {
             "description": "The date and time the webhook was created in ISO 8601 format.",
             "format": "date-time",
-            "type": "string",
-            "x-order": 3
+            "type": "string"
           }
         },
         "type": "object"
@@ -558,12 +496,10 @@
       "WorkflowRes": {
         "properties": {
           "id": {
-            "type": "string",
-            "x-order": 0
+            "type": "string"
           },
           "name": {
-            "type": "string",
-            "x-order": 1
+            "type": "string"
           }
         },
         "type": "object"
@@ -703,24 +639,19 @@
               "schema": {
                 "properties": {
                   "bundle_url": {
-                    "type": "string",
-                    "x-order": 0
+                    "type": "string"
                   },
                   "title": {
-                    "type": "string",
-                    "x-order": 1
+                    "type": "string"
                   },
                   "design_token": {
-                    "type": "string",
-                    "x-order": 2
+                    "type": "string"
                   },
                   "page_id": {
-                    "type": "string",
-                    "x-order": 3
+                    "type": "string"
                   },
                   "campaign_id": {
-                    "type": "string",
-                    "x-order": 4
+                    "type": "string"
                   }
                 },
                 "type": "object"
@@ -769,6 +700,54 @@
           }
         },
         "summary": "Get the latest Canva design state for auto-selecting campaigns.",
+        "tags": [
+          "campaign"
+        ]
+      }
+    },
+    "/campaigns/studio": {
+      "post": {
+        "operationId": "publishStudioEmail",
+        "requestBody": {
+          "content": {
+            "*/*": {
+              "schema": {
+                "properties": {
+                  "html": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "campaign_id": {
+                    "type": "string"
+                  },
+                  "asset_id": {
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              }
+            }
+          },
+          "x-originalParamName": "Body"
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublishStudioRes"
+                }
+              }
+            },
+            "description": "PublishStudioRes"
+          },
+          "400": {
+            "description": ""
+          }
+        },
+        "summary": "Publish a Studio email export as a draft campaign.",
         "tags": [
           "campaign"
         ]
@@ -826,8 +805,7 @@
                 "properties": {
                   "label": {
                     "description": "A friendly display label of the custom field.",
-                    "type": "string",
-                    "x-order": 0
+                    "type": "string"
                   }
                 },
                 "required": [
@@ -935,13 +913,11 @@
               "schema": {
                 "properties": {
                   "name": {
-                    "type": "string",
-                    "x-order": 0
+                    "type": "string"
                   },
                   "color": {
                     "description": "The color of the segment using a hex code. `Use GET List all segment colors`. to view available colors.",
-                    "type": "string",
-                    "x-order": 1
+                    "type": "string"
                   }
                 },
                 "type": "object"
@@ -1052,7 +1028,7 @@
             }
           },
           {
-            "description": "Optional. The subscriber's status.\n\n`active`: The subscriber is currently active to receive marketing emails.\n\n\n`unsubscribed`: The subscriber has opted out of marketing emails.\n\n\n`unconfirmed`: The subscriber is pending for double opt-in confirmation.\n\n\n`bounced`: The subscriber's address is undeliverable due to a hard bounce.\n\n\n`complained`: The subscriber marked an email as spam.\n\n\n`cleaned`: The subscriber was cleaned, learn more [here](https://help.flodesk.com/en/articles/4747969#how_can_i_find_out_which_email_addresses_have_been_cleaned).\n\n",
+            "description": "Optional. The subscriber's status.\n\n`active`: The subscriber is currently active to receive marketing emails.\n\n\n`unsubscribed`: The subscriber has opted out of marketing emails.\n\n\n`unconfirmed`: The subscriber is pending for double opt-in confirmation.\n\n\n`bounced`: The subscriber's address is undeliverable due to a hard bounce.\n\n\n`complained`: The subscriber marked an email as spam.\n\n\n`cleaned`: The subscriber was cleaned, learn more [here](https://help.flodesk.com/en/articles/4747969#how_can_i_find_out_which_email_addresses_have_been_cleaned).\n\n\n`archived`: The subscriber was archived.\n\n",
             "in": "query",
             "name": "status",
             "schema": {
@@ -1062,7 +1038,8 @@
                 "unconfirmed",
                 "bounced",
                 "complained",
-                "cleaned"
+                "cleaned",
+                "archived"
               ],
               "type": "string"
             }
@@ -1143,8 +1120,7 @@
                     "items": {
                       "$ref": "#/components/schemas/CreateOrUpdateSubscriberItem"
                     },
-                    "type": "array",
-                    "x-order": 0
+                    "type": "array"
                   }
                 },
                 "required": [
@@ -1237,8 +1213,7 @@
                     "items": {
                       "type": "string"
                     },
-                    "type": "array",
-                    "x-order": 0
+                    "type": "array"
                   }
                 },
                 "required": [
@@ -1292,8 +1267,7 @@
                     "items": {
                       "type": "string"
                     },
-                    "type": "array",
-                    "x-order": 0
+                    "type": "array"
                   }
                 },
                 "required": [
@@ -1412,21 +1386,18 @@
                 "properties": {
                   "name": {
                     "description": "The webhook name.",
-                    "type": "string",
-                    "x-order": 0
+                    "type": "string"
                   },
                   "post_url": {
                     "description": "The url that the webhook will post to.",
-                    "type": "string",
-                    "x-order": 1
+                    "type": "string"
                   },
                   "events": {
                     "description": "An array specifying which events are enabled for webhook notifications.",
                     "items": {
                       "type": "string"
                     },
-                    "type": "array",
-                    "x-order": 2
+                    "type": "array"
                   }
                 },
                 "required": [
@@ -1476,7 +1447,7 @@
         ],
         "responses": {
           "204": {
-            "description": ""
+            "description": " The request succeeded. There is no content to return."
           },
           "404": {
             "description": ""
@@ -1538,21 +1509,18 @@
                 "properties": {
                   "name": {
                     "description": "The webhook name.",
-                    "type": "string",
-                    "x-order": 0
+                    "type": "string"
                   },
                   "post_url": {
                     "description": "The url that the webhook will post to.",
-                    "type": "string",
-                    "x-order": 1
+                    "type": "string"
                   },
                   "events": {
                     "description": "An array specifying which events are enabled for webhook notifications.",
                     "items": {
                       "type": "string"
                     },
-                    "type": "array",
-                    "x-order": 2
+                    "type": "array"
                   }
                 },
                 "type": "object"
@@ -1663,13 +1631,11 @@
                 "properties": {
                   "id": {
                     "description": "`id` is required if `email` is not present",
-                    "type": "string",
-                    "x-order": 0
+                    "type": "string"
                   },
                   "email": {
                     "description": "`email` is required if `id` is not present",
-                    "type": "string",
-                    "x-order": 1
+                    "type": "string"
                   }
                 },
                 "type": "object"
@@ -1680,7 +1646,7 @@
         },
         "responses": {
           "204": {
-            "description": ""
+            "description": " The request succeeded. There is no content to return."
           },
           "400": {
             "description": ""
@@ -1718,7 +1684,7 @@
         ],
         "responses": {
           "204": {
-            "description": ""
+            "description": " The request succeeded. There is no content to return."
           },
           "400": {
             "description": ""

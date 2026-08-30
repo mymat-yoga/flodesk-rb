@@ -2,6 +2,53 @@
 
 ## [Unreleased]
 
+Re-vendored the API description (`spec/fixtures/openapi.json`, captured
+2026-08-30). The contract spec caught three upstream additions; each fix below
+is the response to a failing contract example.
+
+### Added
+
+- `subscribers.list(status: :archived)` and `Subscriber#status == :archived`.
+  Flodesk added a seventh `SubscriberRes.status` value. Previously
+  `validate_enum!` **raised `ArgumentError`** on it, making archived
+  subscribers unlistable, and a parsed `"archived"` fell through
+  `Coercion.enum` as a String while every sibling status arrived as a Symbol.
+- `Segment#segment_type` — `"static"` or `"dynamic"`, previously reachable only
+  through `#to_h`. Not symbolized: the description documents the two values in
+  prose but declares no enum array.
+- `campaigns.publish_studio` — `POST /campaigns/studio`, the 26th documented
+  operation. **Never retried**, on the same terms as `publish_canva`.
+
+> This endpoint appeared in the 2026-08-30 specification capture and has not
+> been confirmed against the live API, so the existing maturity caveat on the
+> campaign publishing endpoints applies to it in full.
+
+### Changed
+
+- `subscribers.upsert` and `batch_upsert` now **raise `ArgumentError` on an
+  unrecognized attribute** instead of dropping it. A misspelled `frist_name:`
+  used to vanish silently while the request reported success, leaving the
+  caller believing they had written a field they had not. Batch errors name the
+  offending record by index. Error messages name the rejected key only, never
+  its value.
+- `batch_upsert` validates argument shape before contents: a non-Array, or a
+  record that is not a Hash, raises a named `ArgumentError` instead of a
+  `NoMethodError` from inside the payload builder. Passing a single record
+  instead of an array previously had its *values* parsed as field names.
+- Value-object enum specs now iterate `Flodesk::Enums` constants instead of
+  hardcoded literals. The duplicated list was why `archived` went unnoticed:
+  it kept passing while covering one status fewer than the API documents.
+
+### Contract spec
+
+- Now verifies **request bodies**, not just query parameters. A change to a
+  documented body previously sailed through green: the client would simply stop
+  sending a field and every stubbed example would still pass.
+- `Subscribers::SUBSCRIBER_FIELDS` is asserted to match
+  `CreateOrUpdateSubscriberItem` exactly. This is what makes rejecting unknown
+  keys safe rather than brittle — a field Flodesk adds fails the build instead
+  of becoming a runtime rejection of a value the API accepts.
+
 ## [0.1.0] - 2026-07-29
 
 Initial release.
@@ -66,5 +113,5 @@ rediscover the hard way:
 - The description declares no error-body schema anywhere; the `{code, message}`
   envelope was established by probing the live API.
 
-[Unreleased]: https://github.com/jimiray/flodesk-rb/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/jimiray/flodesk-rb/releases/tag/v0.1.0
+[Unreleased]: https://github.com/mymat-yoga/flodesk-rb/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/mymat-yoga/flodesk-rb/releases/tag/v0.1.0

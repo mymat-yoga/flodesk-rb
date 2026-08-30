@@ -10,10 +10,14 @@ module Flodesk
   # a single `Flodesk::STATUSES`. Collecting them here also gives the contract
   # spec one place to verify against `openapi.json`.
   module Enums
-    # `SubscriberRes.status`. The last three are terminal delivery states rather
-    # than subscriber actions.
+    # `SubscriberRes.status`. `bounced`, `complained` and `cleaned` are terminal
+    # delivery states rather than subscriber actions; `archived` is an action
+    # the account owner took on the record.
+    #
+    # Order is significant: the contract spec compares this against the
+    # specification's enum array for equality, not as a set.
     SUBSCRIBER_STATUSES = %w[
-      active unsubscribed unconfirmed bounced complained cleaned
+      active unsubscribed unconfirmed bounced complained cleaned archived
     ].freeze
 
     # `SubscriberRes.source`.

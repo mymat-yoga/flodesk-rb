@@ -58,6 +58,29 @@ RSpec.describe Flodesk::Resources::Subscribers do
 
       expect(a_request(:get, "#{base}/subscribers")).not_to have_been_made
     end
+
+    # Every documented status must be filterable. A value missing from the enum
+    # is not a harmless omission: validate_enum! turns it into a client-side
+    # ArgumentError, making a working endpoint unreachable.
+    it "accepts every documented subscriber status" do
+      Flodesk::Enums::SUBSCRIBER_STATUSES.each do |status|
+        stub_request(:get, "#{base}/subscribers")
+          .with(query: { "status" => status })
+          .to_return(status: 200, body: { "data" => [] }.to_json)
+
+        expect { subscribers.list(status: status) }.not_to raise_error
+      end
+    end
+
+    it "filters by the archived status" do
+      req = stub_request(:get, "#{base}/subscribers")
+            .with(query: { "status" => "archived" })
+            .to_return(status: 200, body: { "data" => [] }.to_json)
+
+      subscribers.list(status: :archived)
+
+      expect(req).to have_been_requested
+    end
   end
 
   describe "#retrieve" do
@@ -145,6 +168,50 @@ RSpec.describe Flodesk::Resources::Subscribers do
       subscribers.upsert(email: "a@b.com")
 
       expect(req).to have_been_requested
+    end
+
+    # Previously an unrecognized key was silently dropped: `frist_name:` simply
+    # vanished and the request succeeded, reporting nothing. Rejecting is only
+    # safe because the contract spec now verifies SUBSCRIBER_FIELDS against the
+    # CreateOrUpdateSubscriberItem schema — a field Flodesk adds fails the build
+    # rather than becoming an unexplained runtime rejection.
+    it "raises on an unknown attribute rather than silently dropping it" do
+      expect { subscribers.upsert(email: "a@b.com", frist_name: "Ada") }
+        .to raise_error(ArgumentError, /frist_name/)
+
+      expect(a_request(:post, "#{base}/subscribers")).not_to have_been_made
+    end
+
+    it "names every unknown attribute, not just the first" do
+      expect { subscribers.upsert(email: "a@b.com", nope: 1, also_nope: 2) }
+        .to raise_error(ArgumentError, /also_nope/)
+    end
+
+    it "accepts string keys as readily as symbols" do
+      req = stub_request(:post, "#{base}/subscribers")
+            .with(body: { "email" => "a@b.com", "first_name" => "Ada" })
+            .to_return(status: 200, body: subscriber_json)
+
+      subscribers.upsert("email" => "a@b.com", "first_name" => "Ada")
+
+      expect(req).to have_been_requested
+    end
+
+    it "accepts every field the specification documents" do
+      Flodesk::Resources::Subscribers::SUBSCRIBER_FIELDS.each do |field|
+        value = case field
+                when :segment_ids then %w[seg_1]
+                when :custom_fields then { "k" => "v" }
+                when :double_optin then true
+                else "x"
+                end
+
+        stub_request(:post, "#{base}/subscribers")
+          .to_return(status: 200, body: subscriber_json)
+
+        expect { subscribers.upsert(:email => "a@b.com", field => value) }
+          .not_to raise_error
+      end
     end
 
     it "raises ArgumentError when neither id nor email is given" do
@@ -238,6 +305,38 @@ RSpec.describe Flodesk::Resources::Subscribers do
 
         expect(req).to have_been_requested
       end
+    end
+  end
+
+  describe "#batch_upsert argument shape" do
+    it "rejects a single record passed instead of an array" do
+      expect { subscribers.batch_upsert({ email: "a@b.com" }) }
+        .to raise_error(ArgumentError, /Array/i)
+
+      expect(a_request(:post, "#{base}/subscribers/batch")).not_to have_been_made
+    end
+
+    it "rejects a non-array argument rather than raising NoMethodError" do
+      expect { subscribers.batch_upsert("nope") }.to raise_error(ArgumentError, /Array/i)
+    end
+
+    it "rejects a record that is not a hash, naming its index" do
+      expect { subscribers.batch_upsert([{ email: "a@b.com" }, "nope"]) }
+        .to raise_error(ArgumentError, /index 1/)
+    end
+
+    it "reports a non-symbolizable key as an unknown field, not a NoMethodError" do
+      expect { subscribers.batch_upsert([{ 1 => "x" }]) }
+        .to raise_error(ArgumentError, /unknown subscriber field/)
+    end
+  end
+
+  describe "#batch_upsert unknown attributes" do
+    it "identifies which record carried the unknown attribute" do
+      expect { subscribers.batch_upsert([{ email: "a@b.com" }, { email: "c@d.com", nope: 1 }]) }
+        .to raise_error(ArgumentError, /index 1/)
+
+      expect(a_request(:post, "#{base}/subscribers/batch")).not_to have_been_made
     end
   end
 

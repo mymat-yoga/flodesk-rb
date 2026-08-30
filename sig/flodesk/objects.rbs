@@ -29,6 +29,8 @@ module Flodesk
     attr_reader color: String?
     attr_reader total_active_subscribers: Integer?
     attr_reader created_at: timestamp
+    # "static" or "dynamic"; not symbolized, as the spec declares no enum.
+    attr_reader segment_type: String?
     attr_reader raw: payload
 
     def self.from: (payload?) -> Segment?

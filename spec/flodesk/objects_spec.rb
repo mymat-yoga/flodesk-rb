@@ -72,12 +72,22 @@ RSpec.describe "Flodesk value objects" do
         expect(subscriber.status).to eq(:active)
       end
 
+      # Driven off the enum constant rather than a literal list: a hardcoded
+      # copy silently stops covering a status the moment one is added upstream,
+      # which is exactly how `archived` went unnoticed.
       it "coerces every documented status" do
-        %w[active unsubscribed unconfirmed bounced complained cleaned].each do |value|
+        Flodesk::Enums::SUBSCRIBER_STATUSES.each do |value|
           object = described_class.from({ "status" => value })
 
           expect(object.status).to eq(value.to_sym)
         end
+      end
+
+      # A status missing from the enum does not raise — it falls through
+      # Coercion.enum as a String, so `status == :archived` quietly reads false
+      # while every other status compares as a Symbol.
+      it "coerces archived to a symbol like every other status" do
+        expect(described_class.from({ "status" => "archived" }).status).to eq(:archived)
       end
 
       it "coerces a known source to a symbol" do
@@ -85,7 +95,7 @@ RSpec.describe "Flodesk value objects" do
       end
 
       it "coerces every documented source" do
-        %w[manual csv form_optin integration checkout].each do |value|
+        Flodesk::Enums::SUBSCRIBER_SOURCES.each do |value|
           expect(described_class.from({ "source" => value }).source).to eq(value.to_sym)
         end
       end
@@ -163,6 +173,23 @@ RSpec.describe "Flodesk value objects" do
       payload = { "id" => "seg_1", "name" => "VIPs", "subscriber_count" => 12 }
 
       expect(described_class.from(payload).to_h).to eq(payload)
+    end
+
+    # A dynamic segment recomputes its membership from rules, so writing to it
+    # via add_to_segments behaves differently than with a static one. Callers
+    # need to be able to tell them apart without reaching into `raw`.
+    it "exposes segment_type" do
+      segment = described_class.from({ "id" => "seg_1", "segment_type" => "dynamic" })
+
+      expect(segment.segment_type).to eq("dynamic")
+    end
+
+    # The specification documents the two values in prose but declares no enum
+    # array, so there is nothing to validate against and the value passes
+    # through as the API sent it.
+    it "passes segment_type through unchanged rather than symbolizing it" do
+      expect(described_class.from({ "segment_type" => "static" }).segment_type).to eq("static")
+      expect(described_class.from({}).segment_type).to be_nil
     end
   end
 

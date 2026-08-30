@@ -172,6 +172,84 @@ RSpec.describe Flodesk::Resources::Campaigns do
     end
   end
 
+  describe "#publish_studio" do
+    let(:publish_args) do
+      { html: "<html></html>", title: "Spring", campaign_id: "c_1", asset_id: "a_1" }
+    end
+
+    it "issues POST /campaigns/studio and returns the body from a 201" do
+      req = stub_request(:post, "#{base}/campaigns/studio")
+            .with(
+              body: {
+                "html" => "<html></html>", "title" => "Spring",
+                "campaign_id" => "c_1", "asset_id" => "a_1"
+              }
+            ).to_return(status: 201, body: { "id" => "c_1", "url" => "https://f.test/c" }.to_json)
+
+      result = campaigns.publish_studio(**publish_args)
+
+      expect(result["id"]).to eq("c_1")
+      expect(result["url"]).to eq("https://f.test/c")
+      expect(req).to have_been_requested
+    end
+
+    # Studio publishing carries the same retry hazard as Canva publishing and
+    # is held to the same policy. These four examples exist for the same reason
+    # as their publish_canva counterparts.
+    it "is NEVER retried on a server error" do
+      req = stub_request(:post, "#{base}/campaigns/studio").to_return(status: 503, body: "{}")
+
+      expect { campaigns.publish_studio(**publish_args) }.to raise_error(Flodesk::ServerError)
+      expect(req).to have_been_requested.once
+    end
+
+    it "is NEVER retried after a timeout, since the campaign may already be sent" do
+      req = stub_request(:post, "#{base}/campaigns/studio").to_timeout
+
+      expect { campaigns.publish_studio(**publish_args) }.to raise_error(Flodesk::TimeoutError)
+      expect(req).to have_been_requested.once
+    end
+
+    it "is NEVER retried on a connection reset" do
+      req = stub_request(:post, "#{base}/campaigns/studio").to_raise(Errno::ECONNRESET)
+
+      expect { campaigns.publish_studio(**publish_args) }.to raise_error(Flodesk::ConnectionError)
+      expect(req).to have_been_requested.once
+    end
+
+    it "is NEVER retried on a 429, because a 429 cannot prove non-acceptance" do
+      req = stub_request(:post, "#{base}/campaigns/studio").to_return(status: 429, body: "{}")
+
+      expect { campaigns.publish_studio(**publish_args) }.to raise_error(Flodesk::RateLimitError)
+      expect(req).to have_been_requested.once
+    end
+
+    it "raises BadRequestError on a 400" do
+      stub_request(:post, "#{base}/campaigns/studio").to_return(status: 400, body: "{}")
+
+      expect { campaigns.publish_studio(**publish_args) }.to raise_error(Flodesk::BadRequestError)
+    end
+
+    it "omits fields the caller did not supply" do
+      req = stub_request(:post, "#{base}/campaigns/studio")
+            .with(body: { "title" => "Spring" })
+            .to_return(status: 201, body: { "id" => "c_1" }.to_json)
+
+      campaigns.publish_studio(title: "Spring")
+
+      expect(req).to have_been_requested
+    end
+
+    it "never posts to the canva endpoint" do
+      stub_request(:post, "#{base}/campaigns/studio")
+        .to_return(status: 201, body: { "id" => "c_1" }.to_json)
+
+      campaigns.publish_studio(**publish_args)
+
+      expect(a_request(:post, "#{base}/campaigns/canva")).not_to have_been_made
+    end
+  end
+
   describe "#canva_design_state" do
     it "issues GET /campaigns/canva/design-state" do
       req = stub_request(:get, "#{base}/campaigns/canva/design-state").to_return(

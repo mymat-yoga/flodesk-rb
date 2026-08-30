@@ -8,10 +8,10 @@ rather than as a code-generator input. See `spec/flodesk/contract_spec.rb`.
 | | |
 | --- | --- |
 | Source | <https://developers.flodesk.com/> (Redoc-rendered; the underlying spec asset is not publicly fetchable) |
-| Retrieved | 2026-07-29 |
+| Retrieved | 2026-08-30 |
 | OpenAPI version | 3.0.3 |
-| SHA-256 | `a5ca0a521050c489c9e9fee4b289a7b2ed8ce9415fd9599c5605ffc604465ff9` |
-| Contents | 18 paths, 25 operations, 24 schemas, 3 `x-webhooks` inbound events |
+| SHA-256 | `d10b3738782d99e209e06fe5017dfdaf839db8aa038667591e814751b2791458` |
+| Contents | 19 paths, 26 operations, 25 schemas, 3 `x-webhooks` inbound events |
 
 ### Why it is vendored
 
@@ -20,6 +20,23 @@ a corresponding client method, that declared query parameters are actually sent,
 and that every documented status code maps to a known error class. Vendoring
 makes the suite hermetic — no network access during tests — and turns "full API
 coverage" into an assertion rather than a claim in the README.
+
+### Change history
+
+Updating this file on 2026-08-30 (from `a5ca0a52…`, retrieved 2026-07-29)
+surfaced three upstream additions, each caught by a failing contract example
+rather than by review:
+
+| Change | Consequence for the client |
+| --- | --- |
+| `subscriber.status` gained `archived` | `subscribers.list(status: "archived")` raised `ArgumentError` — a documented filter was unreachable |
+| `SegmentRes` gained `segment_type` | `"static"`/`"dynamic"` was readable only through `raw` |
+| New `publishStudioEmail` (`POST /campaigns/studio`) | 26th operation, unimplemented |
+
+The `archived` gap is the one worth remembering. A missing enum member is not
+inert: `validate_enum!` turns it into a client-side rejection of a value the API
+accepts, and on the response side `Coercion.enum` passed it through as a String
+while every sibling status arrived as a Symbol.
 
 ### Updating
 
