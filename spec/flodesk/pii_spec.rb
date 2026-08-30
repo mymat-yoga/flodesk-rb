@@ -65,6 +65,17 @@ RSpec.describe "PII containment" do
         }
     end
 
+    # Passing one record instead of an array is an easy mistake, and
+    # `each_with_index` over a Hash yields [[key, value], 0] — so the value was
+    # being parsed as a field name and echoed straight into the message.
+    it "does not leak an email when a single record is passed instead of an array" do
+      expect { client.subscribers.batch_upsert({ email: email }) }
+        .to raise_error(ArgumentError) { |e|
+          expect(e.message).not_to include(email)
+          expect(e.message).to match(/Array/i)
+        }
+    end
+
     it "identifies a batch record by index rather than by email" do
       records = [{ email: "a@b.com" }, { email: email, nope: 1 }]
 

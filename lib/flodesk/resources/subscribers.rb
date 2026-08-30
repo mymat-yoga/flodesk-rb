@@ -131,7 +131,7 @@ module Flodesk
       # Builds a `CreateOrUpdateSubscriberItem`. `index` is included in the error
       # message when validating a batch, so a rejected record is identifiable.
       def subscriber_payload(attrs, index: nil)
-        attrs = normalize_keys(attrs)
+        attrs = normalize_keys(attrs, index)
         validate_known_keys!(attrs, index)
         validate_identifier!(attrs, index)
 
@@ -154,7 +154,16 @@ module Flodesk
       end
 
       def batch_payload(records)
-        raise ArgumentError, "records cannot be empty" if records.nil? || records.empty?
+        # Shape is checked before contents. `each_with_index` over a Hash yields
+        # [[key, value], 0], so a single record passed instead of an array used
+        # to have its *values* parsed as field names — putting a subscriber
+        # email into an error message.
+        unless records.is_a?(Array)
+          raise ArgumentError,
+                "records must be an Array of subscriber attributes, got #{records.class}"
+        end
+
+        raise ArgumentError, "records cannot be empty" if records.empty?
 
         if records.size > MAX_BATCH_SIZE
           raise ArgumentError,
@@ -164,10 +173,19 @@ module Flodesk
         records.each_with_index.map { |record, i| subscriber_payload(record, index: i) }
       end
 
-      def normalize_keys(attrs)
+      # `to_s.to_sym` rather than `to_sym`: a non-symbolizable key (an Integer,
+      # say) should surface as an unknown field, not a NoMethodError from deep
+      # inside the payload builder.
+      def normalize_keys(attrs, index = nil)
         return {} if attrs.nil?
 
-        attrs.to_h { |k, v| [k.to_sym, v] }
+        unless attrs.is_a?(Hash)
+          at = index.nil? ? "" : " at index #{index}"
+          raise ArgumentError,
+                "subscriber attributes must be a Hash#{at}, got #{attrs.class}"
+        end
+
+        attrs.to_h { |k, v| [k.to_s.to_sym, v] }
       end
 
       # An unrecognized key used to be dropped on the floor, so a misspelled

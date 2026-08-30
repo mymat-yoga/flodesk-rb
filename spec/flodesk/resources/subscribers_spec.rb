@@ -308,6 +308,29 @@ RSpec.describe Flodesk::Resources::Subscribers do
     end
   end
 
+  describe "#batch_upsert argument shape" do
+    it "rejects a single record passed instead of an array" do
+      expect { subscribers.batch_upsert({ email: "a@b.com" }) }
+        .to raise_error(ArgumentError, /Array/i)
+
+      expect(a_request(:post, "#{base}/subscribers/batch")).not_to have_been_made
+    end
+
+    it "rejects a non-array argument rather than raising NoMethodError" do
+      expect { subscribers.batch_upsert("nope") }.to raise_error(ArgumentError, /Array/i)
+    end
+
+    it "rejects a record that is not a hash, naming its index" do
+      expect { subscribers.batch_upsert([{ email: "a@b.com" }, "nope"]) }
+        .to raise_error(ArgumentError, /index 1/)
+    end
+
+    it "reports a non-symbolizable key as an unknown field, not a NoMethodError" do
+      expect { subscribers.batch_upsert([{ 1 => "x" }]) }
+        .to raise_error(ArgumentError, /unknown subscriber field/)
+    end
+  end
+
   describe "#batch_upsert unknown attributes" do
     it "identifies which record carried the unknown attribute" do
       expect { subscribers.batch_upsert([{ email: "a@b.com" }, { email: "c@d.com", nope: 1 }]) }

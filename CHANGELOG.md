@@ -31,6 +31,10 @@ is the response to a failing contract example.
   caller believing they had written a field they had not. Batch errors name the
   offending record by index. Error messages name the rejected key only, never
   its value.
+- `batch_upsert` validates argument shape before contents: a non-Array, or a
+  record that is not a Hash, raises a named `ArgumentError` instead of a
+  `NoMethodError` from inside the payload builder. Passing a single record
+  instead of an array previously had its *values* parsed as field names.
 - Value-object enum specs now iterate `Flodesk::Enums` constants instead of
   hardcoded literals. The duplicated list was why `archived` went unnoticed:
   it kept passing while covering one status fewer than the API documents.
