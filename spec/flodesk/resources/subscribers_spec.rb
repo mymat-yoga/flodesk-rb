@@ -170,6 +170,50 @@ RSpec.describe Flodesk::Resources::Subscribers do
       expect(req).to have_been_requested
     end
 
+    # Previously an unrecognized key was silently dropped: `frist_name:` simply
+    # vanished and the request succeeded, reporting nothing. Rejecting is only
+    # safe because the contract spec now verifies SUBSCRIBER_FIELDS against the
+    # CreateOrUpdateSubscriberItem schema — a field Flodesk adds fails the build
+    # rather than becoming an unexplained runtime rejection.
+    it "raises on an unknown attribute rather than silently dropping it" do
+      expect { subscribers.upsert(email: "a@b.com", frist_name: "Ada") }
+        .to raise_error(ArgumentError, /frist_name/)
+
+      expect(a_request(:post, "#{base}/subscribers")).not_to have_been_made
+    end
+
+    it "names every unknown attribute, not just the first" do
+      expect { subscribers.upsert(email: "a@b.com", nope: 1, also_nope: 2) }
+        .to raise_error(ArgumentError, /also_nope/)
+    end
+
+    it "accepts string keys as readily as symbols" do
+      req = stub_request(:post, "#{base}/subscribers")
+            .with(body: { "email" => "a@b.com", "first_name" => "Ada" })
+            .to_return(status: 200, body: subscriber_json)
+
+      subscribers.upsert("email" => "a@b.com", "first_name" => "Ada")
+
+      expect(req).to have_been_requested
+    end
+
+    it "accepts every field the specification documents" do
+      Flodesk::Resources::Subscribers::SUBSCRIBER_FIELDS.each do |field|
+        value = case field
+                when :segment_ids then %w[seg_1]
+                when :custom_fields then { "k" => "v" }
+                when :double_optin then true
+                else "x"
+                end
+
+        stub_request(:post, "#{base}/subscribers")
+          .to_return(status: 200, body: subscriber_json)
+
+        expect { subscribers.upsert(:email => "a@b.com", field => value) }
+          .not_to raise_error
+      end
+    end
+
     it "raises ArgumentError when neither id nor email is given" do
       expect { subscribers.upsert(first_name: "Ada") }
         .to raise_error(ArgumentError, /email.*id|id.*email/i)
@@ -261,6 +305,15 @@ RSpec.describe Flodesk::Resources::Subscribers do
 
         expect(req).to have_been_requested
       end
+    end
+  end
+
+  describe "#batch_upsert unknown attributes" do
+    it "identifies which record carried the unknown attribute" do
+      expect { subscribers.batch_upsert([{ email: "a@b.com" }, { email: "c@d.com", nope: 1 }]) }
+        .to raise_error(ArgumentError, /index 1/)
+
+      expect(a_request(:post, "#{base}/subscribers/batch")).not_to have_been_made
     end
   end
 

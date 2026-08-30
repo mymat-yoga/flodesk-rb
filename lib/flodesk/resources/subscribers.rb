@@ -14,6 +14,19 @@ module Flodesk
       # upserts per minute.
       MAX_BATCH_SIZE = 50
 
+      # Every field `CreateOrUpdateSubscriberItem` documents, and the single
+      # source of truth for both building the payload and rejecting unknown
+      # keys — a duplicated list is how a field quietly stops being covered.
+      #
+      # The contract spec asserts this matches the schema exactly. That is what
+      # makes rejecting unknown keys safe rather than brittle: a field Flodesk
+      # adds fails the build here, instead of becoming a runtime ArgumentError
+      # for a value the API would have accepted.
+      SUBSCRIBER_FIELDS = %i[
+        id email first_name last_name custom_fields segment_ids
+        double_optin optin_ip optin_timestamp
+      ].freeze
+
       # GET /subscribers
       #
       # Issues exactly one request. Use {#auto_paging_each} to walk every page.
@@ -119,19 +132,25 @@ module Flodesk
       # message when validating a batch, so a rejected record is identifiable.
       def subscriber_payload(attrs, index: nil)
         attrs = normalize_keys(attrs)
+        validate_known_keys!(attrs, index)
         validate_identifier!(attrs, index)
 
-        {
-          "id" => attrs[:id],
-          "email" => attrs[:email],
-          "first_name" => attrs[:first_name],
-          "last_name" => attrs[:last_name],
-          "custom_fields" => stringify_custom_fields(attrs[:custom_fields]),
-          "segment_ids" => attrs[:segment_ids] && validate_segment_ids!(attrs[:segment_ids]),
-          "double_optin" => attrs[:double_optin],
-          "optin_ip" => attrs[:optin_ip],
-          "optin_timestamp" => attrs[:optin_timestamp]
-        }.compact
+        SUBSCRIBER_FIELDS.each_with_object({}) do |field, payload|
+          value = coerce_field(field, attrs[field])
+          payload[field.to_s] = value unless value.nil?
+        end
+      end
+
+      # `false` is a meaningful value for `double_optin`, so only `nil` — the
+      # caller having said nothing — omits a field.
+      def coerce_field(field, value)
+        return nil if value.nil?
+
+        case field
+        when :custom_fields then stringify_custom_fields(value)
+        when :segment_ids then validate_segment_ids!(value)
+        else value
+        end
       end
 
       def batch_payload(records)
@@ -149,6 +168,20 @@ module Flodesk
         return {} if attrs.nil?
 
         attrs.to_h { |k, v| [k.to_sym, v] }
+      end
+
+      # An unrecognized key used to be dropped on the floor, so a misspelled
+      # `frist_name:` vanished and the request reported success. Silence is the
+      # worst outcome here: the caller believes they wrote a field they did not.
+      def validate_known_keys!(attrs, index)
+        unknown = attrs.keys - SUBSCRIBER_FIELDS
+        return if unknown.empty?
+
+        at = index.nil? ? "" : " at index #{index}"
+        noun = unknown.one? ? "field" : "fields"
+        raise ArgumentError,
+              "unknown subscriber #{noun}#{at}: #{unknown.join(", ")}. " \
+              "Accepted: #{SUBSCRIBER_FIELDS.join(", ")}"
       end
 
       def validate_identifier!(attrs, index)

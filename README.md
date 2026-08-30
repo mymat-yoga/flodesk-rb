@@ -55,7 +55,8 @@ Flodesk::Client.new(
 
 ```ruby
 # Create or update. The API returns 200 for both and never says which, so this
-# cannot tell you whether the subscriber was new.
+# cannot tell you whether the subscriber was new. Unknown attributes raise
+# rather than being dropped, so a typo surfaces instead of vanishing.
 subscriber = client.subscribers.upsert(
   email:         "ada@example.com",
   first_name:    "Ada",

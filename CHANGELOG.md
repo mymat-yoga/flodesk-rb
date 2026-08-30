@@ -25,9 +25,25 @@ is the response to a failing contract example.
 
 ### Changed
 
+- `subscribers.upsert` and `batch_upsert` now **raise `ArgumentError` on an
+  unrecognized attribute** instead of dropping it. A misspelled `frist_name:`
+  used to vanish silently while the request reported success, leaving the
+  caller believing they had written a field they had not. Batch errors name the
+  offending record by index. Error messages name the rejected key only, never
+  its value.
 - Value-object enum specs now iterate `Flodesk::Enums` constants instead of
   hardcoded literals. The duplicated list was why `archived` went unnoticed:
   it kept passing while covering one status fewer than the API documents.
+
+### Contract spec
+
+- Now verifies **request bodies**, not just query parameters. A change to a
+  documented body previously sailed through green: the client would simply stop
+  sending a field and every stubbed example would still pass.
+- `Subscribers::SUBSCRIBER_FIELDS` is asserted to match
+  `CreateOrUpdateSubscriberItem` exactly. This is what makes rejecting unknown
+  keys safe rather than brittle — a field Flodesk adds fails the build instead
+  of becoming a runtime rejection of a value the API accepts.
 
 ## [0.1.0] - 2026-07-29
 
