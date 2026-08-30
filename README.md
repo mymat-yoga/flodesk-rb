@@ -2,7 +2,7 @@
 
 A dependency-free Ruby client for the [Flodesk API](https://developers.flodesk.com), built for Rails apps.
 
-Covers all 25 documented operations across subscribers, segments, custom fields, workflows, webhooks and campaigns — and absorbs the API's rough edges so you don't have to think about them:
+Covers all 26 documented operations across subscribers, segments, custom fields, workflows, webhooks and campaigns — and absorbs the API's rough edges so you don't have to think about them:
 
 - **Pagination isn't uniform.** Most endpoints take `per_page`; `GET /workflows` takes `perPage`; `GET /campaigns` takes PascalCase filters. You always pass `page:` and `per_page:`.
 - **Batch upsert reports failure inside a `200`.** A client that treats 2xx as success silently drops subscribers. Here, partial failure raises by default.
@@ -151,11 +151,16 @@ client.workflows.remove_subscriber("wf_123", "ada@example.com")
 
 ```ruby
 client.campaigns.list(search: "spring", status: :draft, order_by: "created_at")
+
+client.campaigns.publish_canva(bundle_url: "https://...", title: "Spring")
+client.campaigns.publish_studio(html: "<html>...</html>", title: "Spring")
 ```
 
-> **Maturity caveat.** The Canva campaign endpoints (`publish_canva`, `canva_design_state`) cannot be safely exercised against a live account during development, so they are covered only by specification-derived stubs and are less battle-tested than the subscriber and segment operations.
+> **Maturity caveat.** The campaign publishing endpoints (`publish_canva`, `publish_studio`, `canva_design_state`) cannot be safely exercised against a live account during development, so they are covered only by specification-derived stubs and are less battle-tested than the subscriber and segment operations.
 
-> **`publish_canva` is never retried** — not on `5xx`, not on a timeout, not even on `429`. It publishes an email campaign, and no response code proves the campaign was *not* accepted. A retry could send it to your entire list a second time, which is unrecoverable and visible to every recipient. Failures are surfaced for a human to decide.
+> **`publish_canva` and `publish_studio` are never retried** — not on `5xx`, not on a timeout, not even on `429`. They publish an email campaign, and no response code proves the campaign was *not* accepted. A retry could send it to your entire list a second time, which is unrecoverable and visible to every recipient. Failures are surfaced for a human to decide.
+>
+> Both are documented upstream as publishing a *draft*, which is a weaker hazard than an immediate send. The policy deliberately does not lean on that: "draft" is a one-line summary in the API description, not a guarantee, and the mistake it would license cannot be undone.
 
 ## Errors
 
@@ -208,7 +213,7 @@ Which operations get retried:
 | `POST /subscribers/batch` (upsert) | `POST /custom-fields` (creates) |
 | `POST .../segments` (idempotent add) | `POST /webhooks` (creates) |
 | `POST .../unsubscribe` (terminal state) | `POST /campaigns/canva` (**publishes**) |
-| `POST /workflows/.../subscribers` | |
+| `POST /workflows/.../subscribers` | `POST /campaigns/studio` (**publishes**) |
 | every `GET`, `PUT`, `DELETE` | |
 
 ## Webhooks

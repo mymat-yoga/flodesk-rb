@@ -43,6 +43,7 @@ module ContractFixtures
     "deleteWebhook" => %i[webhooks delete],
     "listCampaigns" => %i[campaigns list],
     "publishCanvaEmail" => %i[campaigns publish_canva],
+    "publishStudioEmail" => %i[campaigns publish_studio],
     "getCanvaDesignState" => %i[campaigns canva_design_state]
   }.freeze
 
@@ -123,9 +124,9 @@ RSpec.describe "OpenAPI contract" do
       expect(unimplemented).to be_empty
     end
 
-    it "covers all 25 documented operations" do
-      expect(operations.size).to eq(25)
-      expect(operation_map.size).to eq(25)
+    it "covers all 26 documented operations" do
+      expect(operations.size).to eq(26)
+      expect(operation_map.size).to eq(26)
     end
   end
 

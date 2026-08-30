@@ -2,6 +2,33 @@
 
 ## [Unreleased]
 
+Re-vendored the API description (`spec/fixtures/openapi.json`, captured
+2026-08-30). The contract spec caught three upstream additions; each fix below
+is the response to a failing contract example.
+
+### Added
+
+- `subscribers.list(status: :archived)` and `Subscriber#status == :archived`.
+  Flodesk added a seventh `SubscriberRes.status` value. Previously
+  `validate_enum!` **raised `ArgumentError`** on it, making archived
+  subscribers unlistable, and a parsed `"archived"` fell through
+  `Coercion.enum` as a String while every sibling status arrived as a Symbol.
+- `Segment#segment_type` — `"static"` or `"dynamic"`, previously reachable only
+  through `#to_h`. Not symbolized: the description documents the two values in
+  prose but declares no enum array.
+- `campaigns.publish_studio` — `POST /campaigns/studio`, the 26th documented
+  operation. **Never retried**, on the same terms as `publish_canva`.
+
+> This endpoint appeared in the 2026-08-30 specification capture and has not
+> been confirmed against the live API, so the existing maturity caveat on the
+> campaign publishing endpoints applies to it in full.
+
+### Changed
+
+- Value-object enum specs now iterate `Flodesk::Enums` constants instead of
+  hardcoded literals. The duplicated list was why `archived` went unnoticed:
+  it kept passing while covering one status fewer than the API documents.
+
 ## [0.1.0] - 2026-07-29
 
 Initial release.

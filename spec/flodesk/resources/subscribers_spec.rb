@@ -58,6 +58,29 @@ RSpec.describe Flodesk::Resources::Subscribers do
 
       expect(a_request(:get, "#{base}/subscribers")).not_to have_been_made
     end
+
+    # Every documented status must be filterable. A value missing from the enum
+    # is not a harmless omission: validate_enum! turns it into a client-side
+    # ArgumentError, making a working endpoint unreachable.
+    it "accepts every documented subscriber status" do
+      Flodesk::Enums::SUBSCRIBER_STATUSES.each do |status|
+        stub_request(:get, "#{base}/subscribers")
+          .with(query: { "status" => status })
+          .to_return(status: 200, body: { "data" => [] }.to_json)
+
+        expect { subscribers.list(status: status) }.not_to raise_error
+      end
+    end
+
+    it "filters by the archived status" do
+      req = stub_request(:get, "#{base}/subscribers")
+            .with(query: { "status" => "archived" })
+            .to_return(status: 200, body: { "data" => [] }.to_json)
+
+      subscribers.list(status: :archived)
+
+      expect(req).to have_been_requested
+    end
   end
 
   describe "#retrieve" do
