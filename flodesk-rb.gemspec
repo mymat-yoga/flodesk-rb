@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
     parameters, batch responses that report partial failure inside a 200, and
     per-endpoint retry safety.
   DESC
-  spec.homepage = "https://github.com/jimiray/flodesk-rb"
+  spec.homepage = "https://github.com/mymat-yoga/flodesk-rb"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.2.0"
   spec.metadata["allowed_push_host"] = "https://rubygems.org"

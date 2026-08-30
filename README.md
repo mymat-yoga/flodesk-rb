@@ -340,7 +340,7 @@ bundle exec rbs -I sig validate
 
 ## Contributing
 
-Bug reports and pull requests are welcome at <https://github.com/jimiray/flodesk-rb>.
+Bug reports and pull requests are welcome at <https://github.com/mymat-yoga/flodesk-rb>.
 
 ## License
 

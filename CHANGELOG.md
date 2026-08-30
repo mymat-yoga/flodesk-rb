@@ -113,5 +113,5 @@ rediscover the hard way:
 - The description declares no error-body schema anywhere; the `{code, message}`
   envelope was established by probing the live API.
 
-[Unreleased]: https://github.com/jimiray/flodesk-rb/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/jimiray/flodesk-rb/releases/tag/v0.1.0
+[Unreleased]: https://github.com/mymat-yoga/flodesk-rb/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/mymat-yoga/flodesk-rb/releases/tag/v0.1.0
