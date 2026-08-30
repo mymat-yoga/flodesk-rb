@@ -52,8 +52,9 @@ RSpec.describe "RBS signatures" do
 
       missing = objects.flat_map do |name, klass|
         body = signatures[/class #{name}\b.*?\n  end/m].to_s
-        klass.members.reject { |m| body.include?("attr_reader #{m}:") }
-                     .map { |m| "#{name}##{m}" }
+        undeclared = klass.members.reject { |m| body.include?("attr_reader #{m}:") }
+
+        undeclared.map { |m| "#{name}##{m}" }
       end
 
       expect(missing).to be_empty
