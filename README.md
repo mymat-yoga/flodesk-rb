@@ -16,6 +16,10 @@ gem "flodesk"
 
 Requires Ruby 3.2+. No runtime dependencies.
 
+> The gem is `flodesk`; the repository is named `flodesk-rb`. The Ruby namespace
+> is `Flodesk` — there is no `Flodesk::Rb`. The `-rb` suffix is a leftover of how
+> the repository was first generated and appears nowhere in the public API.
+
 ## Quick start
 
 ```ruby
