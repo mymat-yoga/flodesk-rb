@@ -173,7 +173,7 @@ RSpec.describe "flodesk.request instrumentation" do
 
   describe "runtime dependencies" do
     it "declares no runtime dependencies at all" do
-      spec = Gem::Specification.load("flodesk-rb.gemspec")
+      spec = Gem::Specification.load("flodesk.gemspec")
 
       expect(spec.runtime_dependencies).to be_empty
     end

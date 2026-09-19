@@ -3,7 +3,7 @@
 require_relative "lib/flodesk/version"
 
 Gem::Specification.new do |spec|
-  spec.name = "flodesk-rb"
+  spec.name = "flodesk"
   spec.version = Flodesk::VERSION
   spec.authors = ["Jim"]
   spec.email = ["jim@mymat.yoga"]

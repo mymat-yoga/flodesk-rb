@@ -25,6 +25,14 @@ is the response to a failing contract example.
 
 ### Changed
 
+- **The gem is now published as `flodesk`, not `flodesk-rb`.** Change your
+  `Gemfile` to `gem "flodesk"`. The Ruby namespace is untouched — it has been
+  `Flodesk` since the first release, never `Flodesk::Rb` — so no `require` or
+  constant reference changes. `flodesk-rb` was never pushed to RubyGems, so
+  this renames an unpublished name rather than orphaning a released one.
+- The `User-Agent` is now `flodesk/<version>`, previously
+  `flodesk-rb/<version>`, so that what Flodesk sees on the wire matches the
+  package name. Passing `app_name:` still yields `<app_name> flodesk/<version>`.
 - `subscribers.upsert` and `batch_upsert` now **raise `ArgumentError` on an
   unrecognized attribute** instead of dropping it. A misspelled `frist_name:`
   used to vanish silently while the request reported success, leaving the

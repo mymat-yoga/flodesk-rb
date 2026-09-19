@@ -2,7 +2,7 @@
 
 source "https://rubygems.org"
 
-# Specify your gem's dependencies in flodesk-rb.gemspec
+# Specify your gem's dependencies in flodesk.gemspec
 gemspec
 
 gem "irb"

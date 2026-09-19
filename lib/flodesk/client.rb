@@ -47,7 +47,7 @@ module Flodesk
 
     # Flodesk's documentation asks integrations to identify themselves.
     def user_agent
-      [@app_name, "flodesk-rb/#{VERSION}"].compact.join(" ")
+      [@app_name, "flodesk/#{VERSION}"].compact.join(" ")
     end
 
     # Rate-limit state from this thread's most recent request, or nil.

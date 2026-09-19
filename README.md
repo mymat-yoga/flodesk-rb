@@ -1,4 +1,4 @@
-# flodesk-rb
+# flodesk
 
 A dependency-free Ruby client for the [Flodesk API](https://developers.flodesk.com), built for Rails apps.
 
@@ -11,7 +11,7 @@ Covers all 26 documented operations across subscribers, segments, custom fields,
 ## Installation
 
 ```ruby
-gem "flodesk-rb"
+gem "flodesk"
 ```
 
 Requires Ruby 3.2+. No runtime dependencies.

@@ -35,7 +35,7 @@ RSpec.describe Flodesk::Connection do
   describe "request identification" do
     it "includes app_name and the gem version when app_name is given" do
       req = stub_request(:get, "#{base}/segments/colors")
-            .with(headers: { "User-Agent" => "MyApp (myapp.com) flodesk-rb/#{Flodesk::VERSION}" })
+            .with(headers: { "User-Agent" => "MyApp (myapp.com) flodesk/#{Flodesk::VERSION}" })
             .to_return(status: 200, body: "{}")
 
       client(app_name: "MyApp (myapp.com)").segments.colors
@@ -45,7 +45,7 @@ RSpec.describe Flodesk::Connection do
 
     it "still identifies the gem when app_name is omitted" do
       req = stub_request(:get, "#{base}/segments/colors")
-            .with(headers: { "User-Agent" => "flodesk-rb/#{Flodesk::VERSION}" })
+            .with(headers: { "User-Agent" => "flodesk/#{Flodesk::VERSION}" })
             .to_return(status: 200, body: "{}")
 
       client.segments.colors
